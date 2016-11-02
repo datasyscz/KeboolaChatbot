@@ -37,6 +37,7 @@ namespace KeboolaChatbot
             if (activity.Type == ActivityTypes.Message || activity.Type == ActivityTypes.ContactRelationUpdate ||
                 activity.Type == ActivityTypes.ConversationUpdate)
             {
+                await LogMessage(activity);
                 var stateClient = activity.GetStateClient();
                 var userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                 bool finish = userData?.GetProperty<bool>("Finish") ?? false;
@@ -65,7 +66,6 @@ namespace KeboolaChatbot
                     reply = activity.CreateReply("Type \"reset\" if you want to restart conversation");
                     await connector.Conversations.ReplyToActivityAsync(reply);
                 }
-
             }
             else
             {
@@ -73,6 +73,17 @@ namespace KeboolaChatbot
             }
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
+        }
+
+        private static async Task LogMessage(Activity activity)
+        {
+            using (DatabaseContext db = new DatabaseContext())
+            {
+                //Log incoming message
+                var conversationLog = await DatabaseModel.Conversation.CreateOrUpdateAsync(activity, db);
+                conversationLog.AddMessage(activity, true);
+                await db.SaveChangesAsync();
+            }
         }
 
         private static async Task Reset(Activity activity, BotData userData, StateClient stateClient)

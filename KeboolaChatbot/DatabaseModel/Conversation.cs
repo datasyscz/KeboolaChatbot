@@ -30,7 +30,6 @@ namespace DatabaseModel
         {
             //Find conversation
             var conversation = await db.Conversation.FindByActivityAsync(activity);
-
             if (conversation == null)
             {
                 conversation = new Conversation
@@ -41,22 +40,42 @@ namespace DatabaseModel
                     BaseUri = activity.ServiceUrl
                 };
 
-                conversation.Customer.BotChannel = new Channel()
+                //log botchannel
+                var botChannel =
+                    await
+                        db.Channel.FirstOrDefaultAsync(
+                            a => a.FrameworkId == activity.Recipient.Id && a.Name == activity.Recipient.Name);
+                if (botChannel == null)
                 {
-                    FrameworkId = activity.Recipient.Id,
-                    Name = activity.Recipient.Name
-                };
-                conversation.Customer.UserChannel = new Channel()
+                    conversation.Customer.BotChannel = new Channel()
+                    {
+                        FrameworkId = activity.Recipient.Id,
+                        Name = activity.Recipient.Name
+                    };
+                }
+                else
+                    conversation.Customer.BotChannel = botChannel;
+
+                //log userChannel
+                var userChannel =
+                    await
+                        db.Channel.FirstOrDefaultAsync(
+                            a => a.FrameworkId == activity.From.Id && a.Name == activity.From.Name);
+                if (userChannel == null)
                 {
-                    FrameworkId = activity.From.Id,
-                    Name = activity.From.Name
-                };
+                    conversation.Customer.UserChannel = new Channel()
+                    {
+                        FrameworkId = activity.From.Id,
+                        Name = activity.From.Name
+                    };
+                }
+                else
+                    conversation.Customer.UserChannel = userChannel;
 
                 db.Conversation.Add(conversation);
             }
 
             conversation.Customer.ConversationID = conversation.ConversationID;
-            await db.SaveChangesAsync();
             return conversation;
         }
 
