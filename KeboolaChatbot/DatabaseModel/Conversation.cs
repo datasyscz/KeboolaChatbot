@@ -25,7 +25,12 @@ namespace DatabaseModel
         public string BaseUri { get; set; }
         public virtual Customer Customer { get; set; }
 
-
+        /// <summary>
+        /// Create or update conversation log in DbContext
+        /// </summary>
+        /// <param name="activity">Incoming message</param>
+        /// <param name="db"></param>
+        /// <returns></returns>
         public static async Task<Conversation> CreateOrUpdateAsync(IMessageActivity activity, DatabaseContext db)
         {
             //Find conversation

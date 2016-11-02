@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace DatabaseModel
 {
+    /// <summary>
+    /// Message in database
+    /// </summary>
     public class Message
     {
         [Key]

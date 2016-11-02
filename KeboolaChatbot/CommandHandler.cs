@@ -6,6 +6,9 @@ using Microsoft.Bot.Connector;
 
 namespace KeboolaChatbot
 {
+    /// <summary>
+    /// Handle user commands
+    /// </summary>
     public class CommandHandler
     {
         public enum CommandType

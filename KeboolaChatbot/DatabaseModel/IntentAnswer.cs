@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace DatabaseModel
 {
+    /// <summary>
+    /// Predefined answer
+    /// </summary>
     public class IntentAnswer
     {
         [Key]

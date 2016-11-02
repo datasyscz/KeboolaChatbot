@@ -37,11 +37,15 @@ namespace KeboolaChatbot
             if (activity.Type == ActivityTypes.Message || activity.Type == ActivityTypes.ContactRelationUpdate ||
                 activity.Type == ActivityTypes.ConversationUpdate)
             {
+                //Log incoming message
                 await LogMessage(activity);
+
+                //Load user context data
                 var stateClient = activity.GetStateClient();
                 var userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                 bool finish = userData?.GetProperty<bool>("Finish") ?? false;
 
+                //handle predefined commands
                 CommandHandler.CommandType command = CommandHandler.Handle(activity);
                 if (command == CommandHandler.CommandType.Reset)
                 {
@@ -49,9 +53,10 @@ namespace KeboolaChatbot
                     finish = false;
                 }
 
-                if (!finish)
+                if (!finish)    //Stop conversation if finish
                     try
                     {
+                        //Dialog
                         await Conversation.SendAsync(activity, new RootDialog().BuildChain);
                     }
                     catch (Exception)
@@ -61,6 +66,7 @@ namespace KeboolaChatbot
                     }
                 else
                 {
+                    //Default message
                     Activity reply = null;
                     var connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                     reply = activity.CreateReply("Type \"reset\" if you want to restart conversation");

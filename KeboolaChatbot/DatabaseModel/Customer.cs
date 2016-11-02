@@ -13,6 +13,9 @@ using System.Xml.Serialization;
 
 namespace DatabaseModel
 {
+    /// <summary>
+    /// Chat bot user
+    /// </summary>
     [Serializable]
     public class Customer
     {
@@ -20,6 +23,10 @@ namespace DatabaseModel
         public int Id { get; set; }
         public virtual Channel UserChannel {get;set;}
         public virtual Channel BotChannel { get; set; }
+
+        /// <summary>
+        /// Bot framework id
+        /// </summary>
         public int ConversationID { get; set;}
         public string BaseUri { get; set; }
 
