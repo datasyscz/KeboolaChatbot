@@ -45,6 +45,7 @@ namespace KeboolaChatbot
                 if (command == CommandHandler.CommandType.Reset)
                 {
                     await Reset(activity, userData, stateClient);
+                    finish = false;
                 }
 
                 if (!finish)
@@ -76,11 +77,11 @@ namespace KeboolaChatbot
 
         private static async Task Reset(Activity activity, BotData userData, StateClient stateClient)
         {
-            bool finish;
-            finish = false;
             userData?.SetProperty("Finish", false);
             activity.Text = "/deleteprofile";
             await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+            await Conversation.SendAsync(activity, new RootDialog().BuildChain);
+            activity.Text = "";
         }
 
         private Activity HandleSystemMessage(Activity message)

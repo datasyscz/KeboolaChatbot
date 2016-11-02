@@ -90,9 +90,9 @@ namespace Tests
             //Y1
             toBot.Text = "no";
             responses = await GetResponse(container, MakeRoot, toBot);
-            Assert.IsTrue(responses.Count == 2);
+            Assert.IsTrue(responses.Count == 1);
             response = responses.Dequeue().Text;
-            Assert.IsTrue(response.Contains("should ask someone"));
+            Assert.IsTrue(response.Contains("credentials"));
         }
 
         [TestMethod]
@@ -124,12 +124,12 @@ namespace Tests
             response = ((HeroCard)responses.Dequeue().Attachments[0].Content).Text;
             Assert.IsTrue(response.Contains("documentation"));
 
-            //Y2
+            //N2
             toBot.Text = "no";
             responses = await GetResponse(container, MakeRoot, toBot);
-            Assert.IsTrue(responses.Count == 2);
+            Assert.IsTrue(responses.Count == 1);
             response = responses.Dequeue().Text;
-            Assert.IsTrue(response.Contains("Try to use Postman"));
+            Assert.IsTrue(response.Contains("should ask someone"));
         }
 
         private static IMessageActivity InitDialog(out Func<IDialog<object>> MakeRoot, out IContainer container)
