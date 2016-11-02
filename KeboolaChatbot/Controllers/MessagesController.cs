@@ -52,7 +52,7 @@ namespace KeboolaChatbot
                     {
                         await Conversation.SendAsync(activity, new RootDialog().BuildChain);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         await Reset(activity, userData, stateClient);
                         await Conversation.SendAsync(activity, new RootDialog().BuildChain);
