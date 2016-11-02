@@ -5,6 +5,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Autofac;
+using KeboolaChatbot.Dialogs;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
 
@@ -13,21 +16,56 @@ namespace KeboolaChatbot
     [BotAuthentication]
     public class MessagesController : ApiController
     {
+        public MessagesController()
+        {
+            var builder = new ContainerBuilder();
+            builder.RegisterType<BotToUserLogger>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+            builder.Register(c => new BotToUserDatabaseWriter(c.Resolve<BotToUserLogger>()))
+                .AsImplementedInterfaces()
+                .InstancePerLifetimeScope();
+            builder.Update(Conversation.Container);
+        }
+
         /// <summary>
         /// POST: api/Messages
         /// Receive a message from a user and reply to it
         /// </summary>
-        public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
+        public async Task<HttpResponseMessage> Post([FromBody] Activity activity)
         {
-            if (activity.Type == ActivityTypes.Message)
+            if (activity.Type == ActivityTypes.Message || activity.Type == ActivityTypes.ContactRelationUpdate ||
+                activity.Type == ActivityTypes.ConversationUpdate)
             {
-                ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
-                // calculate something for us to return
-                int length = (activity.Text ?? string.Empty).Length;
+                var stateClient = activity.GetStateClient();
+                var userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
+                bool finish = userData?.GetProperty<bool>("Finish") ?? false;
 
-                // return our reply to the user
-                Activity reply = activity.CreateReply($"You sent {activity.Text} which was {length} characters");
-                await connector.Conversations.ReplyToActivityAsync(reply);
+                CommandHandler.CommandType command = CommandHandler.Handle(activity);
+                if (command == CommandHandler.CommandType.Reset)
+                {
+                    await Reset(activity, userData, stateClient);
+                    finish = false;
+                }
+
+                if (!finish)
+                    try
+                    {
+                        await Conversation.SendAsync(activity, new RootDialog().BuildChain);
+                    }
+                    catch (Exception)
+                    {
+                        await Reset(activity, userData, stateClient);
+                        await Conversation.SendAsync(activity, new RootDialog().BuildChain);
+                    }
+                else
+                {
+                    Activity reply = null;
+                    var connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                    reply = activity.CreateReply("Type \"reset\" if you want to restart conversation");
+                    await connector.Conversations.ReplyToActivityAsync(reply);
+                }
+
             }
             else
             {
@@ -35,6 +73,15 @@ namespace KeboolaChatbot
             }
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
+        }
+
+        private static async Task Reset(Activity activity, BotData userData, StateClient stateClient)
+        {
+            userData?.SetProperty("Finish", false);
+            activity.Text = "/deleteprofile";
+            await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
+            await Conversation.SendAsync(activity, new RootDialog().BuildChain);
+            activity.Text = "";
         }
 
         private Activity HandleSystemMessage(Activity message)
