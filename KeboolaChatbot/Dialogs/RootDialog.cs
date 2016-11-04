@@ -24,7 +24,7 @@ namespace KeboolaChatbot.Dialogs
                 {
                     await res;
                     return Chain.From(
-                        () => new PromptDialog.PromptConfirm("Do you have access to REST API?", "Don't understand", 20))
+                        () => new PromptDialog.PromptConfirm("Do you have access to REST API?", "Don't understand. Do you have access to REST API?", 20))
                         .ContinueWith<bool, object>(async (ctx2, res2) =>
                         {
                             if (await res2)
@@ -54,7 +54,7 @@ namespace KeboolaChatbot.Dialogs
         {
             return Chain.From(
                 () => new PromptDialog.PromptConfirm("Do you have API documentation?",
-                    "Don't understand", 20)).ContinueWith<bool, object>(
+                    "Don't understand. Do you have API documentation?", 20)).ContinueWith<bool, object>(
                         async (ctx, res) =>
                         {
                             if (await res)
@@ -81,7 +81,7 @@ namespace KeboolaChatbot.Dialogs
         {
             return Chain.From(
                 () => new PromptDialog.PromptConfirm("Do you have Desktop REST client?",
-                    "Don't understand", 20)).ContinueWith<bool, object>(
+                    "Don't understand. Do you have Desktop REST client?", 20)).ContinueWith<bool, object>(
                         async (ctx, res) =>
                         {
                             if (await res)

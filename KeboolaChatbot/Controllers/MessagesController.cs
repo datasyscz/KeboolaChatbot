@@ -37,20 +37,26 @@ namespace KeboolaChatbot
             if (activity.Type == ActivityTypes.Message || activity.Type == ActivityTypes.ContactRelationUpdate ||
                 activity.Type == ActivityTypes.ConversationUpdate)
             {
+                //Log incoming message
+                await LogMessage(activity);
+
+                //Load user context data
                 var stateClient = activity.GetStateClient();
                 var userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                 bool finish = userData?.GetProperty<bool>("Finish") ?? false;
 
+                //handle predefined commands
                 CommandHandler.CommandType command = CommandHandler.Handle(activity);
-                if (command == CommandHandler.CommandType.Reset)
+                if (command == CommandHandler.CommandType.Reset || activity.Action?.ToLower() == "remove")
                 {
                     await Reset(activity, userData, stateClient);
                     finish = false;
                 }
 
-                if (!finish)
+                if (!finish)    //Stop conversation if finish
                     try
                     {
+                        //Dialog
                         await Conversation.SendAsync(activity, new RootDialog().BuildChain);
                     }
                     catch (Exception)
@@ -60,12 +66,12 @@ namespace KeboolaChatbot
                     }
                 else
                 {
+                    //Default message
                     Activity reply = null;
                     var connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                     reply = activity.CreateReply("Type \"reset\" if you want to restart conversation");
                     await connector.Conversations.ReplyToActivityAsync(reply);
                 }
-
             }
             else
             {
@@ -73,6 +79,17 @@ namespace KeboolaChatbot
             }
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
+        }
+
+        private static async Task LogMessage(Activity activity)
+        {
+            using (DatabaseContext db = new DatabaseContext())
+            {
+                //Log incoming message
+                var conversationLog = await DatabaseModel.Conversation.CreateOrUpdateAsync(activity, db);
+                conversationLog.AddMessage(activity, true);
+                await db.SaveChangesAsync();
+            }
         }
 
         private static async Task Reset(Activity activity, BotData userData, StateClient stateClient)

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using DatabaseModel;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Connector;
@@ -47,8 +48,13 @@ namespace KeboolaChatbot
         public async Task PostAsync(IMessageActivity message,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            //TODO log outgoing messages
-
+            using (DatabaseContext db = new DatabaseContext())
+            {
+                //Log outgoing message
+                var conversation = await db.Conversation.FindByActivityAsync(message);
+                conversation.AddMessage(message, false);
+                await db.SaveChangesAsync(cancellationToken);
+            }
             await _inner.PostAsync(message, cancellationToken);
         }
     }
