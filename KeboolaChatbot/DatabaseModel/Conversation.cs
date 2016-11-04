@@ -122,7 +122,8 @@ namespace DatabaseModel
 
     public static class ConversationExt
     {
-        public static async Task<Conversation> FindByActivityAsync(this DbSet<Conversation> sbSet, IMessageActivity activity)
+        public static async Task<Conversation> FindByActivityAsync(this DbSet<Conversation> sbSet,
+            IMessageActivity activity)
         {
             return
                 await sbSet

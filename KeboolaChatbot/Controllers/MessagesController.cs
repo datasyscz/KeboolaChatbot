@@ -47,7 +47,7 @@ namespace KeboolaChatbot
 
                 //handle predefined commands
                 CommandHandler.CommandType command = CommandHandler.Handle(activity);
-                if (command == CommandHandler.CommandType.Reset)
+                if (command == CommandHandler.CommandType.Reset || activity.Action?.ToLower() == "remove")
                 {
                     await Reset(activity, userData, stateClient);
                     finish = false;
