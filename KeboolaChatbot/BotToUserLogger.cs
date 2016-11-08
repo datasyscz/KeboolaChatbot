@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Data.Entity;
+using System.Threading;
 using System.Threading.Tasks;
 using DatabaseModel;
 using Microsoft.Bot.Builder.Dialogs.Internals;
@@ -9,8 +10,8 @@ namespace KeboolaChatbot
 {
     public class BotToUserLogger : IBotToUser
     {
-        private readonly IConnectorClient _client;
         private readonly IMessageActivity _toBot;
+        private readonly IConnectorClient _client;
 
         public BotToUserLogger(IMessageActivity toBot, IConnectorClient client)
         {
@@ -20,42 +21,71 @@ namespace KeboolaChatbot
 
         public IMessageActivity MakeMessage()
         {
-            var toBotActivity = (Activity) _toBot;
+            var toBotActivity = (Activity)_toBot;
             return toBotActivity.CreateReply();
         }
 
-        public async Task PostAsync(IMessageActivity message,
-            CancellationToken cancellationToken = default(CancellationToken))
+        public async Task PostAsync(IMessageActivity message, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await _client.Conversations.ReplyToActivityAsync((Activity) message, cancellationToken);
+            await _client.Conversations.ReplyToActivityAsync((Activity)message, cancellationToken);
         }
     }
 
     public class BotToUserDatabaseWriter : IBotToUser
     {
+        protected readonly IDatabaseContext _db;
         private readonly IBotToUser _inner;
-
-        public BotToUserDatabaseWriter(IBotToUser inner)
+        public BotToUserDatabaseWriter(IBotToUser inner, IDatabaseContext db)
         {
+            _db = db;
             SetField.NotNull(out _inner, nameof(inner), inner);
         }
-
         public IMessageActivity MakeMessage()
         {
             return _inner.MakeMessage();
         }
 
-        public async Task PostAsync(IMessageActivity message,
+        public virtual async Task PostAsync(IMessageActivity message,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            using (DatabaseContext db = new DatabaseContext())
-            {
-                //Log outgoing message
-                var conversation = await db.Conversation.FindByActivityAsync(message);
-                conversation.AddMessage(message, false);
-                await db.SaveChangesAsync(cancellationToken);
-            }
+            // loging outgoing message
+            var conversation = await _db.Conversation.FindByActivityAsync(message);
+            conversation.AddMessage(message, false);
+            await _db.SaveChangesAsync();
             await _inner.PostAsync(message, cancellationToken);
+        }
+    }
+
+    public class BotToUserDbTranslate : BotToUserDatabaseWriter
+    {
+       
+        public BotToUserDbTranslate(IBotToUser inner, IDatabaseContext db) : base(inner, db)
+        {
+           
+        }
+
+        public override async Task PostAsync(IMessageActivity message,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            string intentAnswer;
+            if (message.Text != string.Empty)
+                message.Text = await GetIntent(message.Text, cancellationToken);
+            else if (message.Attachments.Count > 0 && message.Attachments[0].Content is HeroCard)
+            {
+                HeroCard heroCard =(HeroCard) message.Attachments[0].Content;
+                heroCard.Text = await GetIntent(heroCard.Text, cancellationToken);
+            }
+                
+            await base.PostAsync(message, cancellationToken);
+        }
+
+        private async Task<string> GetIntent(string IntentName, CancellationToken cancellationToken)
+        {
+            var intent = await _db.IntentAnswer.FirstOrDefaultAsync(a => a.Name == IntentName, cancellationToken);
+            if (intent == null)
+                return IntentName;
+            else
+                return intent.Answer;
         }
     }
 }

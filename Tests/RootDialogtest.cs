@@ -16,7 +16,7 @@ using System.Threading;
 using KeboolaChatbot.Dialogs;
 
 
-namespace Tests
+ namespace Tests
 {
     [TestClass]
     public class RootDialogtest : DialogTestBase
@@ -32,39 +32,39 @@ namespace Tests
             // act: sending the message
             var responses = await GetResponse(container, MakeRoot, toBot);
             Assert.IsTrue(responses.Count == 2);
-            Assert.IsTrue(responses.Dequeue().Text.Contains("Hello"));
-            Assert.IsTrue(responses.Dequeue().Text.Contains("name"));
+            Assert.AreEqual(responses.Dequeue().Text ,"Hello" );
+            Assert.AreEqual(responses.Dequeue().Text, "Your name");
 
             toBot.Text = "David";
             responses = await GetResponse(container, MakeRoot, toBot);
             Assert.IsTrue(responses.Count == 1);
             string response = ((HeroCard) responses.Dequeue().Attachments[0].Content).Text;
-            Assert.IsTrue(response.Contains("access to REST"));
+            Assert.AreEqual(response, "Have access API?");
 
             //Y1
             toBot.Text = "yes";
             responses = await GetResponse(container, MakeRoot, toBot);
             Assert.IsTrue(responses.Count == 2);
             response = responses.Dequeue().Text;
-            Assert.IsTrue(response.Contains("Try to call"));
+            Assert.AreEqual(response, "Try to call endpoint");
             response = ((HeroCard) responses.Dequeue().Attachments[0].Content).Text;
-            Assert.IsTrue(response.Contains("documentation"));
+            Assert.AreEqual(response, "Do you have doc?");
 
             //Y2
             toBot.Text = "yes";
             responses = await GetResponse(container, MakeRoot, toBot);
             Assert.IsTrue(responses.Count == 2);
             response = responses.Dequeue().Text;
-            Assert.IsTrue(response.Contains("need to find out some information"));
+            Assert.AreEqual(response, "Need some information");
             response = ((HeroCard)responses.Dequeue().Attachments[0].Content).Text;
-            Assert.IsTrue(response.Contains("REST client?"));
+            Assert.AreEqual(response, "Do you have REST Client?");
 
             //Y3
             toBot.Text = "yes";
             responses = await GetResponse(container, MakeRoot, toBot);
             Assert.IsTrue(responses.Count == 1);
             response = responses.Dequeue().Text;
-            Assert.IsTrue(response.Contains("Did you try to get some data via REST Client?"));
+            Assert.AreEqual(response, "Did you try to get some data via REST Client?");
         }
 
         [TestMethod]
@@ -78,21 +78,21 @@ namespace Tests
             // act: sending the message
             var responses = await GetResponse(container, MakeRoot, toBot);
             Assert.IsTrue(responses.Count == 2);
-            Assert.IsTrue(responses.Dequeue().Text.Contains("Hello"));
-            Assert.IsTrue(responses.Dequeue().Text.Contains("name"));
+            Assert.AreEqual(responses.Dequeue().Text, "Hello");
+            Assert.AreEqual(responses.Dequeue().Text, "Your name");
 
             toBot.Text = "David";
             responses = await GetResponse(container, MakeRoot, toBot);
             Assert.IsTrue(responses.Count == 1);
             string response = ((HeroCard)responses.Dequeue().Attachments[0].Content).Text;
-            Assert.IsTrue(response.Contains("access to REST"));
+            Assert.AreEqual(response, "Have access API?");
 
             //Y1
             toBot.Text = "no";
             responses = await GetResponse(container, MakeRoot, toBot);
             Assert.IsTrue(responses.Count == 1);
             response = responses.Dequeue().Text;
-            Assert.IsTrue(response.Contains("credentials"));
+            Assert.AreEqual(response, "Try to get credentials");
         }
 
         [TestMethod]
@@ -106,30 +106,30 @@ namespace Tests
             // act: sending the message
             var responses = await GetResponse(container, MakeRoot, toBot);
             Assert.IsTrue(responses.Count == 2);
-            Assert.IsTrue(responses.Dequeue().Text.Contains("Hello"));
-            Assert.IsTrue(responses.Dequeue().Text.Contains("name"));
+            Assert.AreEqual(responses.Dequeue().Text, "Hello");
+            Assert.AreEqual(responses.Dequeue().Text, "Your name");
 
             toBot.Text = "David";
             responses = await GetResponse(container, MakeRoot, toBot);
             Assert.IsTrue(responses.Count == 1);
             string response = ((HeroCard)responses.Dequeue().Attachments[0].Content).Text;
-            Assert.IsTrue(response.Contains("access to REST"));
+            Assert.AreEqual(response, "Have access API?");
 
             //Y1
             toBot.Text = "yes";
             responses = await GetResponse(container, MakeRoot, toBot);
             Assert.IsTrue(responses.Count == 2);
             response = responses.Dequeue().Text;
-            Assert.IsTrue(response.Contains("great"));
+            Assert.AreEqual(response, "Try to call endpoint");
             response = ((HeroCard)responses.Dequeue().Attachments[0].Content).Text;
-            Assert.IsTrue(response.Contains("documentation"));
+            Assert.AreEqual(response, "Do you have doc?");
 
             //N2
             toBot.Text = "no";
             responses = await GetResponse(container, MakeRoot, toBot);
             Assert.IsTrue(responses.Count == 1);
             response = responses.Dequeue().Text;
-            Assert.IsTrue(response.Contains("should ask someone"));
+            Assert.AreEqual(response, "You should ask someone");
         }
 
         private static IMessageActivity InitDialog(out Func<IDialog<object>> MakeRoot, out IContainer container)
@@ -140,7 +140,6 @@ namespace Tests
             toBot = DialogTestBase.MakeTestMessage();
             toBot.From.Id = Guid.NewGuid().ToString();
             toBot.Text = "ConversationUpdate";
-            //toBot.Locale = "cs-CZ";
 
             MakeRoot = () => echoDialog;
 

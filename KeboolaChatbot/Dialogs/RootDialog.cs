@@ -14,23 +14,23 @@ namespace KeboolaChatbot.Dialogs
     {
         public IDialog<object> BuildChain()
         {
-            return Chain.Return("Hello, I'm RC bot, Let's jump to some brief dialogue")
+            return Chain.Return("Hello")
                 .PostToUser()
                  .WaitToBot()
-                .Select(a=> "What's your name")
+                .Select(a=> "Your name")
                 .PostToUser()
                 .WaitToBot()
                 .ContinueWith<object, object>(async (ctx, res) =>
                 {
                     await res;
                     return Chain.From(
-                        () => new PromptDialog.PromptConfirm("Do you have access to REST API?", "Don't understand. Do you have access to REST API?", 20))
+                        () => new PromptDialog.PromptConfirm("Have access API?", "Don't understand. Do you have access to REST API?", 20))
                         .ContinueWith<bool, object>(async (ctx2, res2) =>
                         {
                             if (await res2)
                             {
                                 //Y1
-                                return Chain.Return("That is great! Try to call some endpoint via REST client!")
+                                return Chain.Return("Try to call endpoint")
                                     .PostToUser()
                                     .ContinueWith<object, object>(async (ctx3, res3) =>
                                     {
@@ -42,7 +42,7 @@ namespace KeboolaChatbot.Dialogs
                             {
                                 //N1
                                 ctx2.UserData.SetValue("Finish", true);
-                                return Chain.Return("Try to get your own credentials, we'll need it!").PostToUser().WaitToBot();
+                                return Chain.Return("Try to get credentials").PostToUser().WaitToBot();
                             }
                         });
 
@@ -53,14 +53,14 @@ namespace KeboolaChatbot.Dialogs
         private static IDialog<object> Documentation()
         {
             return Chain.From(
-                () => new PromptDialog.PromptConfirm("Do you have API documentation?",
+                () => new PromptDialog.PromptConfirm("Do you have doc?",
                     "Don't understand. Do you have API documentation?", 20)).ContinueWith<bool, object>(
                         async (ctx, res) =>
                         {
                             if (await res)
                             {
                                 //Y2
-                                return Chain.Return("That is great! We'll need to find out some information.")
+                                return Chain.Return("Need some information")
                                     .PostToUser()
                                     .ContinueWith<object, object>(async (ctx2, res2) =>
                                     {
@@ -72,7 +72,7 @@ namespace KeboolaChatbot.Dialogs
                             {
                                 //N2
                                 ctx.UserData.SetValue("Finish", true);
-                                return Chain.Return("You should ask someone - we need to have it!").PostToUser().WaitToBot();
+                                return Chain.Return("You should ask someone").PostToUser().WaitToBot();
                             }
                         });
         }
@@ -80,7 +80,7 @@ namespace KeboolaChatbot.Dialogs
         private static IDialog<object> DesktopClient()
         {
             return Chain.From(
-                () => new PromptDialog.PromptConfirm("Do you have Desktop REST client?",
+                () => new PromptDialog.PromptConfirm("Do you have REST Client?",
                     "Don't understand. Do you have Desktop REST client?", 20)).ContinueWith<bool, object>(
                         async (ctx, res) =>
                         {
@@ -94,7 +94,7 @@ namespace KeboolaChatbot.Dialogs
                             {
                                 //N3
                                 ctx.UserData.SetValue("Finish", true);
-                                return Chain.Return("Try to use Postman and \"touch\" API on your own").PostToUser().WaitToBot();
+                                return Chain.Return("Try post man").PostToUser().WaitToBot();
                             }
                         });
         }

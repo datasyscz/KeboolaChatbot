@@ -16,16 +16,18 @@ namespace KeboolaChatbot
     [BotAuthentication]
     public class MessagesController : ApiController
     {
+        private IDatabaseContext _db;
         public MessagesController()
         {
+            _db = new DatabaseContext();
             var builder = new ContainerBuilder();
             builder.RegisterType<BotToUserLogger>()
                 .AsSelf()
                 .InstancePerLifetimeScope();
-            builder.Register(c => new BotToUserDatabaseWriter(c.Resolve<BotToUserLogger>()))
-                .AsImplementedInterfaces()
+            builder.Register(c => new BotToUserDbTranslate(c.Resolve<BotToUserLogger>(), _db))
+               .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
-            builder.Update(Conversation.Container);
+            builder.Update(Microsoft.Bot.Builder.Dialogs.Conversation.Container);
         }
 
         /// <summary>
