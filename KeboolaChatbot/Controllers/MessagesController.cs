@@ -1,22 +1,20 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Description;
 using Autofac;
-using KeboolaChatbot.Dialogs;
+using Keboola.Bot.Dialogs;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
-using Newtonsoft.Json;
 
-namespace KeboolaChatbot
+namespace Keboola.Bot
 {
     [BotAuthentication]
     public class MessagesController : ApiController
     {
-        private IDatabaseContext _db;
+        private readonly IDatabaseContext _db;
+
         public MessagesController()
         {
             _db = new DatabaseContext();
@@ -25,14 +23,14 @@ namespace KeboolaChatbot
                 .AsSelf()
                 .InstancePerLifetimeScope();
             builder.Register(c => new BotToUserDbTranslate(c.Resolve<BotToUserLogger>(), _db))
-               .AsImplementedInterfaces()
+                .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
-            builder.Update(Microsoft.Bot.Builder.Dialogs.Conversation.Container);
+            builder.Update(Conversation.Container);
         }
 
         /// <summary>
-        /// POST: api/Messages
-        /// Receive a message from a user and reply to it
+        ///     POST: api/Messages
+        ///     Receive a message from a user and reply to it
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody] Activity activity)
         {
@@ -45,17 +43,17 @@ namespace KeboolaChatbot
                 //Load user context data
                 var stateClient = activity.GetStateClient();
                 var userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
-                bool finish = userData?.GetProperty<bool>("Finish") ?? false;
+                var finish = userData?.GetProperty<bool>("Finish") ?? false;
 
                 //handle predefined commands
-                CommandHandler.CommandType command = CommandHandler.Handle(activity);
+                var command = CommandHandler.Handle(activity);
                 if (command == CommandHandler.CommandType.Reset || activity.Action?.ToLower() == "remove")
                 {
                     await Reset(activity, userData, stateClient);
                     finish = false;
                 }
 
-                if (!finish)    //Stop conversation if finish
+                if (!finish) //Stop conversation if finish
                     try
                     {
                         //Dialog
@@ -85,7 +83,7 @@ namespace KeboolaChatbot
 
         private static async Task LogMessage(Activity activity)
         {
-            using (DatabaseContext db = new DatabaseContext())
+            using (var db = new DatabaseContext())
             {
                 //Log incoming message
                 var conversationLog = await DatabaseModel.Conversation.CreateOrUpdateAsync(activity, db);

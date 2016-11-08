@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.FormFlow;
-using Microsoft.Bot.Builder.FormFlow.Advanced;
 
-namespace KeboolaChatbot.Dialogs
+namespace Keboola.Bot.Dialogs
 {
     [Serializable]
     public class RootDialog
@@ -16,16 +10,18 @@ namespace KeboolaChatbot.Dialogs
         {
             return Chain.Return("Hello")
                 .PostToUser()
-                 .WaitToBot()
-                .Select(a=> "Your name")
+                .WaitToBot()
+                .Select(a => "Your name")
                 .PostToUser()
                 .WaitToBot()
                 .ContinueWith<object, object>(async (ctx, res) =>
                 {
                     await res;
                     return Chain.From(
-                        () => new PromptDialog.PromptConfirm("Have access API?", "Don't understand. Do you have access to REST API?", 20))
-                        .ContinueWith<bool, object>(async (ctx2, res2) =>
+                        () =>
+                            new PromptDialog.PromptConfirm("Have access API?",
+                                "Don't understand. Do you have access to REST API?", 20))
+                        .ContinueWith(async (ctx2, res2) =>
                         {
                             if (await res2)
                             {
@@ -38,14 +34,10 @@ namespace KeboolaChatbot.Dialogs
                                         return Documentation();
                                     });
                             }
-                            else
-                            {
-                                //N1
-                                ctx2.UserData.SetValue("Finish", true);
-                                return Chain.Return("Try to get credentials").PostToUser().WaitToBot();
-                            }
+                            //N1
+                            ctx2.UserData.SetValue("Finish", true);
+                            return Chain.Return("Try to get credentials").PostToUser().WaitToBot();
                         });
-
                 })
                 .PostToUser();
         }
@@ -54,7 +46,7 @@ namespace KeboolaChatbot.Dialogs
         {
             return Chain.From(
                 () => new PromptDialog.PromptConfirm("Do you have doc?",
-                    "Don't understand. Do you have API documentation?", 20)).ContinueWith<bool, object>(
+                    "Don't understand. Do you have API documentation?", 20)).ContinueWith(
                         async (ctx, res) =>
                         {
                             if (await res)
@@ -68,12 +60,9 @@ namespace KeboolaChatbot.Dialogs
                                         return DesktopClient();
                                     });
                             }
-                            else
-                            {
-                                //N2
-                                ctx.UserData.SetValue("Finish", true);
-                                return Chain.Return("You should ask someone").PostToUser().WaitToBot();
-                            }
+                            //N2
+                            ctx.UserData.SetValue("Finish", true);
+                            return Chain.Return("You should ask someone").PostToUser().WaitToBot();
                         });
         }
 
@@ -88,14 +77,14 @@ namespace KeboolaChatbot.Dialogs
                             {
                                 //Y3
                                 ctx.UserData.SetValue("Finish", true);
-                                return Chain.Return("Did you try to get some data via REST Client?").PostToUser().WaitToBot();
+                                return
+                                    Chain.Return("Did you try to get some data via REST Client?")
+                                        .PostToUser()
+                                        .WaitToBot();
                             }
-                            else
-                            {
-                                //N3
-                                ctx.UserData.SetValue("Finish", true);
-                                return Chain.Return("Try post man").PostToUser().WaitToBot();
-                            }
+                            //N3
+                            ctx.UserData.SetValue("Finish", true);
+                            return Chain.Return("Try post man").PostToUser().WaitToBot();
                         });
         }
     }

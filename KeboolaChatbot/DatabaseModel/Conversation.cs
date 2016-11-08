@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
-using System.Data.Entity.Validation;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using KeboolaChatbot;
+using Keboola.Bot;
 using Microsoft.Bot.Connector;
 
 namespace DatabaseModel
 {
-    public partial class Conversation
+    public class Conversation
     {
         [Key]
         public int ConversationID { get; set; }
@@ -26,7 +21,7 @@ namespace DatabaseModel
         public virtual Customer Customer { get; set; }
 
         /// <summary>
-        /// Create or update conversation log in DbContext
+        ///     Create or update conversation log in DbContext
         /// </summary>
         /// <param name="activity">Incoming message</param>
         /// <param name="db"></param>
@@ -52,7 +47,7 @@ namespace DatabaseModel
                             a => a.FrameworkId == activity.Recipient.Id && a.Name == activity.Recipient.Name);
                 if (botChannel == null)
                 {
-                    conversation.Customer.BotChannel = new Channel()
+                    conversation.Customer.BotChannel = new Channel
                     {
                         FrameworkId = activity.Recipient.Id,
                         Name = activity.Recipient.Name
@@ -68,7 +63,7 @@ namespace DatabaseModel
                             a => a.FrameworkId == activity.From.Id && a.Name == activity.From.Name);
                 if (userChannel == null)
                 {
-                    conversation.Customer.UserChannel = new Channel()
+                    conversation.Customer.UserChannel = new Channel
                     {
                         FrameworkId = activity.From.Id,
                         Name = activity.From.Name
@@ -86,8 +81,8 @@ namespace DatabaseModel
 
         public void AddMessage(IMessageActivity activity, bool messageFromUser)
         {
-            var text = String.Empty;
-            if (activity.Text != String.Empty) //Simple message
+            var text = string.Empty;
+            if (activity.Text != string.Empty) //Simple message
             {
                 text = activity.Text;
             }
@@ -106,7 +101,7 @@ namespace DatabaseModel
                 }
             }
 
-            var message = new Message()
+            var message = new Message
             {
                 Text = text,
                 Date = DateTime.Now,

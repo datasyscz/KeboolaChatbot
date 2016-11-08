@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DatabaseModel
 {
     /// <summary>
-    /// Message in database
+    ///     Message in database
     /// </summary>
     public class Message
     {

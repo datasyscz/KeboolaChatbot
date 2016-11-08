@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DatabaseModel
+﻿namespace DatabaseModel
 {
     public class Channel
     {
@@ -13,7 +6,7 @@ namespace DatabaseModel
         public string Name { get; set; }
 
         /// <summary>
-        /// Bot framework id
+        ///     Bot framework id
         /// </summary>
         public string FrameworkId { get; set; }
     }

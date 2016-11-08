@@ -6,12 +6,12 @@ using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Connector;
 
-namespace KeboolaChatbot
+namespace Keboola.Bot
 {
     public class BotToUserLogger : IBotToUser
     {
-        private readonly IMessageActivity _toBot;
         private readonly IConnectorClient _client;
+        private readonly IMessageActivity _toBot;
 
         public BotToUserLogger(IMessageActivity toBot, IConnectorClient client)
         {
@@ -21,13 +21,14 @@ namespace KeboolaChatbot
 
         public IMessageActivity MakeMessage()
         {
-            var toBotActivity = (Activity)_toBot;
+            var toBotActivity = (Activity) _toBot;
             return toBotActivity.CreateReply();
         }
 
-        public async Task PostAsync(IMessageActivity message, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task PostAsync(IMessageActivity message,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            await _client.Conversations.ReplyToActivityAsync((Activity)message, cancellationToken);
+            await _client.Conversations.ReplyToActivityAsync((Activity) message, cancellationToken);
         }
     }
 
@@ -35,11 +36,13 @@ namespace KeboolaChatbot
     {
         protected readonly IDatabaseContext _db;
         private readonly IBotToUser _inner;
+
         public BotToUserDatabaseWriter(IBotToUser inner, IDatabaseContext db)
         {
             _db = db;
             SetField.NotNull(out _inner, nameof(inner), inner);
         }
+
         public IMessageActivity MakeMessage()
         {
             return _inner.MakeMessage();
@@ -58,10 +61,8 @@ namespace KeboolaChatbot
 
     public class BotToUserDbTranslate : BotToUserDatabaseWriter
     {
-       
         public BotToUserDbTranslate(IBotToUser inner, IDatabaseContext db) : base(inner, db)
         {
-           
         }
 
         public override async Task PostAsync(IMessageActivity message,
@@ -72,10 +73,10 @@ namespace KeboolaChatbot
                 message.Text = await GetIntent(message.Text, cancellationToken);
             else if (message.Attachments.Count > 0 && message.Attachments[0].Content is HeroCard)
             {
-                HeroCard heroCard =(HeroCard) message.Attachments[0].Content;
+                var heroCard = (HeroCard) message.Attachments[0].Content;
                 heroCard.Text = await GetIntent(heroCard.Text, cancellationToken);
             }
-                
+
             await base.PostAsync(message, cancellationToken);
         }
 
@@ -84,8 +85,7 @@ namespace KeboolaChatbot
             var intent = await _db.IntentAnswer.FirstOrDefaultAsync(a => a.Name == IntentName, cancellationToken);
             if (intent == null)
                 return IntentName;
-            else
-                return intent.Answer;
+            return intent.Answer;
         }
     }
 }

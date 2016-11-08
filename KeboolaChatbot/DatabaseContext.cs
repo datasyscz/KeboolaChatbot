@@ -1,14 +1,9 @@
-using Microsoft.Bot.Connector;
 using System;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
 using System.Threading.Tasks;
 using DatabaseModel;
 
-
-namespace KeboolaChatbot
+namespace Keboola.Bot
 {
     public interface IDatabaseContext : IDisposable
     {
@@ -22,16 +17,15 @@ namespace KeboolaChatbot
 
     public class DatabaseContext : DbContext, IDatabaseContext
     {
+        public DatabaseContext()
+            : base("name=DatabaseContext")
+        {
+        }
+
         public DbSet<Message> Message { get; set; }
         public DbSet<Conversation> Conversation { get; set; }
         public DbSet<Customer> Customer { get; set; }
         public DbSet<Channel> Channel { get; set; }
         public DbSet<IntentAnswer> IntentAnswer { get; set; }
-
-        public DatabaseContext()
-            : base("name=DatabaseContext")
-        {
-         
-        }
     }
 }

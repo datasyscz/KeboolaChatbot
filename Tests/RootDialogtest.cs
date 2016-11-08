@@ -13,10 +13,10 @@ using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Autofac;
 using System.Threading;
-using KeboolaChatbot.Dialogs;
+using Keboola.Bot.Dialogs;
 
 
- namespace Tests
+ namespace Keboola.Bot.Tests
 {
     [TestClass]
     public class RootDialogtest : DialogTestBase
