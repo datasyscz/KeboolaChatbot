@@ -249,3 +249,6 @@ ModelManifest.xml
 /KeboolaChatbot/Web.Debug.config
 /KeboolaChatbot/Web.config
 /KeboolaChatbot/Properties/PublishProfiles/KeboolaChatbotTest - Web Deploy.pubxml
+/Keboola.Bot.Editor/Web.config
+/Keboola.Bot.Editor/Web.Debug.config
+/Keboola.Bot.Editor/Web.Release.config

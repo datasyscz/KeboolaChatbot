@@ -54,6 +54,10 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="EntityFramework.MoqHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.MoqHelper.1.0.0\lib\net45\EntityFramework.MoqHelper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
@@ -77,6 +81,10 @@
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.3.1.0\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -134,19 +142,15 @@
     <Compile Include="BotToUserLogger.cs" />
     <Compile Include="CommandHandler.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
+    <Compile Include="ConversationLogger.cs" />
     <Compile Include="DatabaseContext.cs" />
-    <Compile Include="DatabaseModel\Channel.cs" />
-    <Compile Include="DatabaseModel\Conversation.cs" />
-    <Compile Include="DatabaseModel\Customer.cs" />
-    <Compile Include="DatabaseModel\IntentAnswer.cs" />
-    <Compile Include="DatabaseModel\Message.cs" />
     <Compile Include="Dialogs\RootDialog.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201611021346218_InitDatabase.cs" />
-    <Compile Include="Migrations\201611021346218_InitDatabase.Designer.cs">
-      <DependentUpon>201611021346218_InitDatabase.cs</DependentUpon>
+    <Compile Include="Migrations\201611081323470_init.cs" />
+    <Compile Include="Migrations\201611081323470_init.Designer.cs">
+      <DependentUpon>201611081323470_init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -161,8 +165,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201611021346218_InitDatabase.resx">
-      <DependentUpon>201611021346218_InitDatabase.cs</DependentUpon>
+    <ProjectReference Include="..\Keboola.Shared\Keboola.Shared.csproj">
+      <Project>{281fed79-f9d9-4b9c-b178-8d78cce575dd}</Project>
+      <Name>Keboola.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201611081323470_init.resx">
+      <DependentUpon>201611081323470_init.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
@@ -193,6 +203,10 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

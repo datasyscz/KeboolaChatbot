@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DatabaseModel
+namespace Keboola.Shared
 {
     /// <summary>
     ///     Predefined answer

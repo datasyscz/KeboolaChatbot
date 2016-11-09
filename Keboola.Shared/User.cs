@@ -1,13 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace DatabaseModel
+namespace Keboola.Shared
 {
     /// <summary>
     ///     Chat bot user
     /// </summary>
     [Serializable]
-    public class Customer
+    public class User
     {
         [Key]
         public int Id { get; set; }
@@ -21,5 +21,7 @@ namespace DatabaseModel
         public int ConversationID { get; set; }
 
         public string BaseUri { get; set; }
+
+        public string Name { get; set; }
     }
 }

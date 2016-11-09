@@ -1,25 +1,29 @@
 using System.Collections.Generic;
-using System.Data.Entity.Migrations;
-using DatabaseModel;
+using Keboola.Shared;
 
 namespace Keboola.Bot.Migrations
 {
-    internal sealed class Configuration : DbMigrationsConfiguration<DatabaseContext>
+    using System;
+    using System.Data.Entity;
+    using System.Data.Entity.Migrations;
+    using System.Linq;
+
+    internal sealed class Configuration : DbMigrationsConfiguration<Keboola.Bot.DatabaseContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(DatabaseContext context)
+        protected override void Seed(Keboola.Bot.DatabaseContext context)
         {
-            IList<IntentAnswer> answers = new List<IntentAnswer>();
+           /* IList<IntentAnswer> answers = new List<IntentAnswer>();
             context.IntentAnswer.Add(new IntentAnswer
             {
                 Name = "Hello",
                 Answer = "Hello, I'm RC bot, Let's jump to some brief dialogue."
             });
-            context.IntentAnswer.Add(new IntentAnswer {Name = "Your name", Answer = "What's your name?"});
+            context.IntentAnswer.Add(new IntentAnswer { Name = "Your name", Answer = "What's your name?" });
             context.IntentAnswer.Add(new IntentAnswer
             {
                 Name = "Have access API?",
@@ -64,8 +68,7 @@ namespace Keboola.Bot.Migrations
             {
                 Name = "Did you try to get some data via REST Client?",
                 Answer = "Did you try to get some data via REST Client?"
-            });
-
+            });*/
             base.Seed(context);
         }
     }

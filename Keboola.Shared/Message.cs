@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace DatabaseModel
+namespace Keboola.Shared
 {
     /// <summary>
     ///     Message in database
@@ -18,6 +18,6 @@ namespace DatabaseModel
 
         public bool SendedByUser { get; set; }
 
-        public virtual Customer Customer { get; set; }
+        public virtual User Customer { get; set; }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using System.Data.Entity;
 using System.Threading;
 using System.Threading.Tasks;
-using DatabaseModel;
+
+using Keboola.Shared;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Connector;
+using Keboola.Shared;
 
 namespace Keboola.Bot
 {
@@ -52,7 +54,8 @@ namespace Keboola.Bot
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // loging outgoing message
-            var conversation = await _db.Conversation.FindByActivityAsync(message);
+
+            var conversation = await _db.FindConversation(message);
             conversation.AddMessage(message, false);
             await _db.SaveChangesAsync();
             await _inner.PostAsync(message, cancellationToken);

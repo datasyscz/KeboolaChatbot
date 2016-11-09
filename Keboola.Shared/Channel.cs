@@ -1,4 +1,4 @@
-﻿namespace DatabaseModel
+﻿namespace Keboola.Shared
 {
     public class Channel
     {
