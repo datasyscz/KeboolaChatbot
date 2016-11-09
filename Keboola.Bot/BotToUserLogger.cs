@@ -1,12 +1,9 @@
 ﻿using System.Data.Entity;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Keboola.Shared;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Connector;
-using Keboola.Shared;
 
 namespace Keboola.Bot
 {

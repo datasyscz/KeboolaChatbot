@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Data.Entity;
 using System.Threading.Tasks;
-using System.Web;
 using Keboola.Shared;
 using Microsoft.Bot.Connector;
 
@@ -11,7 +7,7 @@ namespace Keboola.Bot
 {
     public class ConversationLogger
     {
-        private IDatabaseContext _db;
+        private readonly IDatabaseContext _db;
 
         public ConversationLogger(IDatabaseContext db)
         {
@@ -27,13 +23,13 @@ namespace Keboola.Bot
         public async Task<Conversation> AddOrUpdateConversation(IMessageActivity activity)
         {
             //Find conversation
-                var conversation = await _db.FindConversation(activity);
+            var conversation = await _db.FindConversation(activity);
             if (conversation == null)
             {
                 conversation = new Conversation
                 {
                     User = new User(),
-                    Name =  activity.Conversation.Name,
+                    Name = activity.Conversation.Name,
                     FrameworkId = activity.Conversation.Id,
                     BaseUri = activity.ServiceUrl
                 };

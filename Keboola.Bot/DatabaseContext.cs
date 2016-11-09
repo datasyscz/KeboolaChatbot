@@ -1,6 +1,5 @@
 using System;
 using System.Data.Entity;
-using System.Linq;
 using System.Threading.Tasks;
 using Keboola.Shared;
 using Microsoft.Bot.Connector;
@@ -32,7 +31,7 @@ namespace Keboola.Bot
         public DbSet<IntentAnswer> IntentAnswer { get; set; }
 
         public async Task<Conversation> FindConversation(
-           IMessageActivity activity)
+            IMessageActivity activity)
         {
             return
                 await Conversation

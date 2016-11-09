@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Autofac;
 using Keboola.Bot.Dialogs;
-using Keboola.Shared;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
-using Conversation = Microsoft.Bot.Builder.Dialogs.Conversation;
 
 namespace Keboola.Bot
 {
@@ -27,7 +25,7 @@ namespace Keboola.Bot
             builder.Register(c => new BotToUserDbTranslate(c.Resolve<BotToUserLogger>(), _db))
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
-            builder.Update(Microsoft.Bot.Builder.Dialogs.Conversation.Container);
+            builder.Update(Conversation.Container);
         }
 
         /// <summary>
@@ -59,12 +57,12 @@ namespace Keboola.Bot
                     try
                     {
                         //Dialog
-                        await Microsoft.Bot.Builder.Dialogs.Conversation.SendAsync(activity, new RootDialog().BuildChain);
+                        await Conversation.SendAsync(activity, new RootDialog().BuildChain);
                     }
                     catch (Exception)
                     {
                         await Reset(activity, userData, stateClient);
-                        await Microsoft.Bot.Builder.Dialogs.Conversation.SendAsync(activity, new RootDialog().BuildChain);
+                        await Conversation.SendAsync(activity, new RootDialog().BuildChain);
                     }
                 else
                 {
@@ -86,7 +84,7 @@ namespace Keboola.Bot
         private async Task LogMessage(Activity activity)
         {
             //Log incoming message
-            ConversationLogger logger = new ConversationLogger(_db);
+            var logger = new ConversationLogger(_db);
             var conversationLog = await logger.AddOrUpdateConversation(activity);
             conversationLog.AddMessage(activity, true);
             await _db.SaveChangesAsync();
