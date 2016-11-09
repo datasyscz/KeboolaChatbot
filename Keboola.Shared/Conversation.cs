@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 using Keboola.Shared;
 using Microsoft.Bot.Connector;
@@ -53,6 +54,44 @@ namespace Keboola.Shared
                 Messages = new List<Message>();
 
             Messages.Add(message);
+        }
+
+        public string DateStr
+        {
+            get
+            {
+                DateTime date = Messages.OrderByDescending(a => a.Date).FirstOrDefault().Date;
+                return date.ToString("d.M.yyyy hh:mm");
+            }
+        }
+
+        public string StoryFull
+        {
+            get
+            {
+                string result = string.Empty;
+                var list = GetChronologic();
+                foreach (var msg in list)
+                {
+                    string type = msg.SendedByUser ? "User" : "Bot";
+                    result += $"{type}: {msg.Text} " + Environment.NewLine;
+                }
+                return result;
+            }
+        }
+
+        public List<Message> GetChronologic()
+        {
+            return Messages.OrderBy(a => a.Date).ToList();
+        }
+
+        public string StoryShort
+        {
+            get
+            {
+                string result = StoryFull;
+                return result.Length < 150 ? result : result.Substring(0, 150) + Environment.NewLine + "...";
+            }
         }
     }
 }

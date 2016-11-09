@@ -1,0 +1,55 @@
+﻿
+@model PagedList.IPagedList<Keboola.Shared.Conversation>
+@using Keboola.Bot.Editor.Extensions
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Conversation</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            Last activity
+        </th>
+        <th>
+            Channel
+        </th>
+        <th>
+            Username
+        </th>
+        <th>
+            Conversation
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateStr)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BaseUri)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.UserChannel.Name)
+            </td>
+            <td>
+                @Html.NewLine2Br(item.StoryShort)
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new {id = item.ConversationID})
+            </td>
+        </tr>
+    }
+</table>
+<br/>
+Stránka @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) z @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))

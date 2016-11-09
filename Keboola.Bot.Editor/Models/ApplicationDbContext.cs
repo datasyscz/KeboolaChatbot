@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Keboola.Shared;
 
 namespace Keboola.Bot.Editor.Models
 {
@@ -20,6 +21,12 @@ namespace Keboola.Bot.Editor.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<Conversation> Conversation { get; set; }
+        public DbSet<User> Customer { get; set; }
+        public DbSet<Channel> Channel { get; set; }
+        public DbSet<IntentAnswer> IntentAnswer { get; set; }
+
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {

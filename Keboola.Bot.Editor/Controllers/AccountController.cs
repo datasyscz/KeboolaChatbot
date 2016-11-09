@@ -136,7 +136,6 @@ namespace Keboola.Bot.Editor.Controllers
 
         //
         // GET: /Account/Register
-        [AllowAnonymous]
         public ActionResult Register()
         {
             return View();
@@ -145,7 +144,6 @@ namespace Keboola.Bot.Editor.Controllers
         //
         // POST: /Account/Register
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
@@ -163,7 +161,7 @@ namespace Keboola.Bot.Editor.Controllers
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "IntentAnswers");
                 }
                 AddErrors(result);
             }
@@ -392,7 +390,7 @@ namespace Keboola.Bot.Editor.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "IntentAnswers");
         }
 
         //
@@ -449,7 +447,7 @@ namespace Keboola.Bot.Editor.Controllers
             {
                 return Redirect(returnUrl);
             }
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "IntentAnswers");
         }
 
         internal class ChallengeResult : HttpUnauthorizedResult
