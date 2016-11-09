@@ -1,11 +1,14 @@
-﻿using System.Threading;
+﻿using System.Data.Entity;
+using System.Threading;
 using System.Threading.Tasks;
-using DatabaseModel;
+
+using Keboola.Shared;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Connector;
+using Keboola.Shared;
 
-namespace KeboolaChatbot
+namespace Keboola.Bot
 {
     public class BotToUserLogger : IBotToUser
     {
@@ -33,10 +36,12 @@ namespace KeboolaChatbot
 
     public class BotToUserDatabaseWriter : IBotToUser
     {
+        protected readonly IDatabaseContext _db;
         private readonly IBotToUser _inner;
 
-        public BotToUserDatabaseWriter(IBotToUser inner)
+        public BotToUserDatabaseWriter(IBotToUser inner, IDatabaseContext db)
         {
+            _db = db;
             SetField.NotNull(out _inner, nameof(inner), inner);
         }
 
@@ -45,17 +50,45 @@ namespace KeboolaChatbot
             return _inner.MakeMessage();
         }
 
-        public async Task PostAsync(IMessageActivity message,
+        public virtual async Task PostAsync(IMessageActivity message,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            using (DatabaseContext db = new DatabaseContext())
-            {
-                //Log outgoing message
-                var conversation = await db.Conversation.FindByActivityAsync(message);
-                conversation.AddMessage(message, false);
-                await db.SaveChangesAsync(cancellationToken);
-            }
+            // loging outgoing message
+
+            var conversation = await _db.FindConversation(message);
+            conversation.AddMessage(message, false);
+            await _db.SaveChangesAsync();
             await _inner.PostAsync(message, cancellationToken);
+        }
+    }
+
+    public class BotToUserDbTranslate : BotToUserDatabaseWriter
+    {
+        public BotToUserDbTranslate(IBotToUser inner, IDatabaseContext db) : base(inner, db)
+        {
+        }
+
+        public override async Task PostAsync(IMessageActivity message,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            string intentAnswer;
+            if (message.Text != string.Empty)
+                message.Text = await GetIntent(message.Text, cancellationToken);
+            else if (message.Attachments.Count > 0 && message.Attachments[0].Content is HeroCard)
+            {
+                var heroCard = (HeroCard) message.Attachments[0].Content;
+                heroCard.Text = await GetIntent(heroCard.Text, cancellationToken);
+            }
+
+            await base.PostAsync(message, cancellationToken);
+        }
+
+        private async Task<string> GetIntent(string IntentName, CancellationToken cancellationToken)
+        {
+            var intent = await _db.IntentAnswer.FirstOrDefaultAsync(a => a.Name == IntentName, cancellationToken);
+            if (intent == null)
+                return IntentName;
+            return intent.Answer;
         }
     }
 }

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Microsoft.Bot.Connector;
+﻿using Microsoft.Bot.Connector;
 
-namespace KeboolaChatbot
+namespace Keboola.Bot
 {
     /// <summary>
-    /// Handle user commands
+    ///     Handle user commands
     /// </summary>
     public class CommandHandler
     {
@@ -19,7 +15,7 @@ namespace KeboolaChatbot
 
         public static CommandType Handle(Activity activity, BotData userData = null, BotData conversationData = null)
         {
-            if (activity.Text == "//reset"|| activity.Text == "reset" || activity.Text == "restart")
+            if (activity.Text == "//reset" || activity.Text == "reset" || activity.Text == "restart")
             {
                 return CommandType.Reset;
             }

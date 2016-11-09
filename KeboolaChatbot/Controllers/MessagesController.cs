@@ -1,36 +1,38 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Description;
 using Autofac;
-using KeboolaChatbot.Dialogs;
+using Keboola.Bot.Dialogs;
+using Keboola.Shared;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
-using Newtonsoft.Json;
+using Conversation = Microsoft.Bot.Builder.Dialogs.Conversation;
 
-namespace KeboolaChatbot
+namespace Keboola.Bot
 {
     [BotAuthentication]
     public class MessagesController : ApiController
     {
+        private readonly IDatabaseContext _db;
+
         public MessagesController()
         {
+            _db = new DatabaseContext();
             var builder = new ContainerBuilder();
             builder.RegisterType<BotToUserLogger>()
                 .AsSelf()
                 .InstancePerLifetimeScope();
-            builder.Register(c => new BotToUserDatabaseWriter(c.Resolve<BotToUserLogger>()))
+            builder.Register(c => new BotToUserDbTranslate(c.Resolve<BotToUserLogger>(), _db))
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
-            builder.Update(Conversation.Container);
+            builder.Update(Microsoft.Bot.Builder.Dialogs.Conversation.Container);
         }
 
         /// <summary>
-        /// POST: api/Messages
-        /// Receive a message from a user and reply to it
+        ///     POST: api/Messages
+        ///     Receive a message from a user and reply to it
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody] Activity activity)
         {
@@ -43,26 +45,26 @@ namespace KeboolaChatbot
                 //Load user context data
                 var stateClient = activity.GetStateClient();
                 var userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
-                bool finish = userData?.GetProperty<bool>("Finish") ?? false;
+                var finish = userData?.GetProperty<bool>("Finish") ?? false;
 
                 //handle predefined commands
-                CommandHandler.CommandType command = CommandHandler.Handle(activity);
+                var command = CommandHandler.Handle(activity);
                 if (command == CommandHandler.CommandType.Reset || activity.Action?.ToLower() == "remove")
                 {
                     await Reset(activity, userData, stateClient);
                     finish = false;
                 }
 
-                if (!finish)    //Stop conversation if finish
+                if (!finish) //Stop conversation if finish
                     try
                     {
                         //Dialog
-                        await Conversation.SendAsync(activity, new RootDialog().BuildChain);
+                        await Microsoft.Bot.Builder.Dialogs.Conversation.SendAsync(activity, new RootDialog().BuildChain);
                     }
                     catch (Exception)
                     {
                         await Reset(activity, userData, stateClient);
-                        await Conversation.SendAsync(activity, new RootDialog().BuildChain);
+                        await Microsoft.Bot.Builder.Dialogs.Conversation.SendAsync(activity, new RootDialog().BuildChain);
                     }
                 else
                 {
@@ -81,15 +83,13 @@ namespace KeboolaChatbot
             return response;
         }
 
-        private static async Task LogMessage(Activity activity)
+        private async Task LogMessage(Activity activity)
         {
-            using (DatabaseContext db = new DatabaseContext())
-            {
-                //Log incoming message
-                var conversationLog = await DatabaseModel.Conversation.CreateOrUpdateAsync(activity, db);
-                conversationLog.AddMessage(activity, true);
-                await db.SaveChangesAsync();
-            }
+            //Log incoming message
+            ConversationLogger logger = new ConversationLogger(_db);
+            var conversationLog = await logger.AddOrUpdateConversation(activity);
+            conversationLog.AddMessage(activity, true);
+            await _db.SaveChangesAsync();
         }
 
         private static async Task Reset(Activity activity, BotData userData, StateClient stateClient)

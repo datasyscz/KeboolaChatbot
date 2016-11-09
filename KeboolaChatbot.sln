@@ -3,9 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeboolaChatbot", "KeboolaChatbot\KeboolaChatbot.csproj", "{A8BA1066-5695-4D71-ABB4-65E5A5E0C3D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keboola.Bot", "KeboolaChatbot\Keboola.Bot.csproj", "{A8BA1066-5695-4D71-ABB4-65E5A5E0C3D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{ADE7FCE3-498D-4AFD-86B5-BC5FA57E0832}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keboola.Bot.Tests", "Tests\Keboola.Bot.Tests.csproj", "{ADE7FCE3-498D-4AFD-86B5-BC5FA57E0832}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keboola.Bot.Editor", "Keboola.Bot.Editor\Keboola.Bot.Editor.csproj", "{08D9C1DC-7A65-42E4-9068-1F43207F6B67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keboola.Bot.Editor.Tests", "Keboola.Bot.Editor.Tests\Keboola.Bot.Editor.Tests.csproj", "{D8B2989D-3776-4DE5-8042-8FA7115CD30E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keboola.Shared", "Keboola.Shared\Keboola.Shared.csproj", "{281FED79-F9D9-4B9C-B178-8D78CCE575DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +27,18 @@ Global
 		{ADE7FCE3-498D-4AFD-86B5-BC5FA57E0832}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADE7FCE3-498D-4AFD-86B5-BC5FA57E0832}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADE7FCE3-498D-4AFD-86B5-BC5FA57E0832}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08D9C1DC-7A65-42E4-9068-1F43207F6B67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08D9C1DC-7A65-42E4-9068-1F43207F6B67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08D9C1DC-7A65-42E4-9068-1F43207F6B67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08D9C1DC-7A65-42E4-9068-1F43207F6B67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8B2989D-3776-4DE5-8042-8FA7115CD30E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8B2989D-3776-4DE5-8042-8FA7115CD30E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8B2989D-3776-4DE5-8042-8FA7115CD30E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8B2989D-3776-4DE5-8042-8FA7115CD30E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{281FED79-F9D9-4B9C-B178-8D78CCE575DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{281FED79-F9D9-4B9C-B178-8D78CCE575DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{281FED79-F9D9-4B9C-B178-8D78CCE575DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{281FED79-F9D9-4B9C-B178-8D78CCE575DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
