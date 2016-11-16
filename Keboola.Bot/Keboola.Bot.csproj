@@ -104,6 +104,12 @@
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="ConversationLogger.cs" />
     <Compile Include="DatabaseContext.cs" />
+    <Compile Include="Dialogs\ConfigurationDialogs\Auth\Basic.cs" />
+    <Compile Include="Dialogs\ConfigurationDialogs\Auth\Login.cs" />
+    <Compile Include="Dialogs\ConfigurationDialogs\Auth\Oauth10.cs" />
+    <Compile Include="Dialogs\ConfigurationDialogs\Auth\Oauth20.cs" />
+    <Compile Include="Dialogs\ConfigurationDialogs\Auth\Query.cs" />
+    <Compile Include="Dialogs\ConfigureDialog.cs" />
     <Compile Include="Dialogs\RootDialog.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -135,6 +141,7 @@
       <DependentUpon>201611081323470_init.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

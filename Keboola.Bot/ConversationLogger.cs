@@ -1,10 +1,17 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
+using System.Threading;
 using System.Threading.Tasks;
 using Keboola.Shared;
 using Microsoft.Bot.Connector;
 
 namespace Keboola.Bot
 {
+    public interface IConversationLogger
+    {
+
+    }
+
     public class ConversationLogger
     {
         private readonly IDatabaseContext _db;
@@ -49,7 +56,7 @@ namespace Keboola.Bot
                 }
                 else
                     conversation.User.BotChannel = botChannel;
-
+             
                 //log userChannel
                 var userChannel =
                     await
@@ -65,12 +72,22 @@ namespace Keboola.Bot
                 }
                 else
                     conversation.User.UserChannel = userChannel;
-
                 _db.Conversation.Add(conversation);
             }
 
             conversation.User.ConversationID = conversation.ConversationID;
             return conversation;
+        }
+
+        public async Task LogOutgoingMessage(IMessageActivity message, CancellationToken cancellationToken)
+        {
+            var conversation = await _db.FindConversation(message);
+
+            if (conversation != null)
+            {
+                conversation.AddMessage(message, false);
+                await _db.SaveChangesAsync();
+            }
         }
     }
 }

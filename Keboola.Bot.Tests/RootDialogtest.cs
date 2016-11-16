@@ -1,160 +1,207 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
-
+using Autofac;
+using Keboola.Bot.Dialogs;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Internals;
+using Microsoft.Bot.Builder.Tests;
+using Microsoft.Bot.Connector;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Connector;
-
-using Microsoft.Bot.Builder.Tests;
-using Microsoft.Bot.Builder.Dialogs.Internals;
-using Autofac;
-using System.Threading;
-using Keboola.Bot.Dialogs;
-
-
- namespace Keboola.Bot.Tests
+namespace Keboola.Bot.Tests
 {
     [TestClass]
     public class RootDialogtest : DialogTestBase
     {
+        private IContainer container;
+        private Func<IDialog<object>> MakeRoot;
+        private Queue<IMessageActivity> responses = new Queue<IMessageActivity>();
+        private IMessageActivity toBot;
+
+        [TestMethod]
+        public async Task TestLoginY5()
+        {
+            await TestApiNameDocY4();
+            await FromUser("login");
+            Assert.IsTrue(await FromBot("login endpoint"));
+            await FromUser("foo login endpoint");
+            Assert.IsTrue(await FromBot("username"));
+            //Y6
+            await FromUser("Foo User");
+            Assert.IsTrue(await FromBot("password"));
+            await FromUser("Password654");
+        }
+
+        [TestMethod]
+        public async Task TestApiNameDocY4()
+        {
+            await RootDialogAccesDocumentClient(); //LVL1
+            Assert.IsTrue(await FromBot("Great now we configure json"));
+            Assert.IsTrue(await FromBot("API Name"));
+            await FromUser("Foo api name");
+            Assert.IsTrue(await FromBot("API Documentation"));
+            await FromUser("Api documentation foo");
+            Assert.IsTrue(await FromBot("API baseUrl"));
+            await FromUser("http://www.foo.com/");
+            Assert.IsTrue(await FromBot("Auth Type"));
+        }
+
+        [TestMethod]
+        public async Task TestBasicY6()
+        {
+            await TestApiNameDocY4();
+            await FromUser("basic");
+            Assert.IsTrue(await FromBot("username"));
+            await FromUser("Foo User");
+            Assert.IsTrue(await FromBot("password"));
+            await FromUser("Password654");
+        }
+
+        [TestMethod]
+        public async Task TestQueryY7()
+        {
+            await TestApiNameDocY4();
+            await FromUser("query");
+            Assert.IsTrue(await FromBot("apiKey"));
+            await FromUser("test api key 6+5sa4dsaAAD*+sad441");
+            Assert.IsTrue(await FromBot("Pagination Type?"));
+        }
+
+        [TestMethod]
+        public async Task TestOAuth10Y8()
+        {
+            await TestApiNameDocY4();
+            await FromUser("oauth10");
+            Assert.IsTrue(await FromBot("data"));
+            await FromUser("some data");
+            Assert.IsTrue(await FromBot("appKey"));
+            await FromUser("test api key 6+5sa4dsaAAD*+sad441");
+            Assert.IsTrue(await FromBot("appSecret"));
+            await FromUser("6+5sa4dsaAAD*+sad441");
+            Assert.IsTrue(await FromBot("Pagination Type?"));
+        }
+
+        [TestMethod]
+        public async Task TestOAuth20Y9()
+        {
+            await TestApiNameDocY4();
+            await FromUser("oauth20");
+            Assert.IsTrue(await FromBot("TBD"));
+            //Y6
+            await FromUser("???");
+            Assert.IsTrue(await FromBot("Pagination Type?"));
+        }
+
+        public async Task FromUser(string text)
+        {
+            Debug.WriteLine("User:" + text);
+            toBot.Text = text;
+            await GetResponses();
+        }
+
+        private async Task GetResponses()
+        {
+            var responsese = await GetResponse(container, MakeRoot, toBot);
+            foreach (var messageActivity in responsese)
+                responses.Enqueue(messageActivity);
+        }
+
+        public async Task<bool> FromBot(string text)
+        {
+            var msg = responses.Dequeue();
+            if (msg.Attachments.Count > 0)
+            {
+                var response = ((HeroCard)msg.Attachments[0].Content).Text;
+                Debug.WriteLine("Bot:" + response + " (hero)");
+                return response == text;
+            }
+            Debug.WriteLine("Bot:" + msg.Text);
+            return msg.Text == text;
+        }
+
+
         [TestMethod]
         public async Task RootDialogAccesDocumentClient()
         {
-            Func<IDialog<object>> MakeRoot;
-            IContainer container;
-            var toBot = InitDialog(out MakeRoot, out container);
-
+            InitDialog(out MakeRoot, out container);
+            await GetResponses();
             //Y0
-            // act: sending the message
-            var responses = await GetResponse(container, MakeRoot, toBot);
-            Assert.IsTrue(responses.Count == 2);
-            Assert.AreEqual(responses.Dequeue().Text ,"Hello" );
-            Assert.AreEqual(responses.Dequeue().Text, "Your name");
-
-            toBot.Text = "David";
-            responses = await GetResponse(container, MakeRoot, toBot);
-            Assert.IsTrue(responses.Count == 1);
-            string response = ((HeroCard) responses.Dequeue().Attachments[0].Content).Text;
-            Assert.AreEqual(response, "Have access API?");
-
+            Assert.IsTrue(await FromBot("Hello"));
+            Assert.IsTrue(await FromBot("Your name"));
+            await FromUser("David");
+            Assert.IsTrue(await FromBot("Have access API?"));
             //Y1
-            toBot.Text = "yes";
-            responses = await GetResponse(container, MakeRoot, toBot);
-            Assert.IsTrue(responses.Count == 2);
-            response = responses.Dequeue().Text;
-            Assert.AreEqual(response, "Try to call endpoint");
-            response = ((HeroCard) responses.Dequeue().Attachments[0].Content).Text;
-            Assert.AreEqual(response, "Do you have doc?");
-
+            await FromUser("yes");
+            Assert.IsTrue(await FromBot("Try to call endpoint"));
+            Assert.IsTrue(await FromBot("Do you have doc?"));
             //Y2
-            toBot.Text = "yes";
-            responses = await GetResponse(container, MakeRoot, toBot);
-            Assert.IsTrue(responses.Count == 2);
-            response = responses.Dequeue().Text;
-            Assert.AreEqual(response, "Need some information");
-            response = ((HeroCard)responses.Dequeue().Attachments[0].Content).Text;
-            Assert.AreEqual(response, "Do you have REST Client?");
-
+            await FromUser("yes");
+            Assert.IsTrue(await FromBot("Need some information"));
+            Assert.IsTrue(await FromBot("Do you have REST Client?"));
             //Y3
-            toBot.Text = "yes";
-            responses = await GetResponse(container, MakeRoot, toBot);
-            Assert.IsTrue(responses.Count == 1);
-            response = responses.Dequeue().Text;
-            Assert.AreEqual(response, "Did you try to get some data via REST Client?");
+            await FromUser("yes");
+            Assert.IsTrue(await FromBot("Did you try to get some data via REST Client?"));
+            await FromUser("yes");
         }
 
         [TestMethod]
         public async Task RootDialogNoDocum()
         {
-            Func<IDialog<object>> MakeRoot;
-            IContainer container;
-            var toBot = InitDialog(out MakeRoot, out container);
+           
+            InitDialog(out MakeRoot, out container);
+            await GetResponses();
 
             //Y0
-            // act: sending the message
-            var responses = await GetResponse(container, MakeRoot, toBot);
-            Assert.IsTrue(responses.Count == 2);
-            Assert.AreEqual(responses.Dequeue().Text, "Hello");
-            Assert.AreEqual(responses.Dequeue().Text, "Your name");
-
-            toBot.Text = "David";
-            responses = await GetResponse(container, MakeRoot, toBot);
-            Assert.IsTrue(responses.Count == 1);
-            string response = ((HeroCard)responses.Dequeue().Attachments[0].Content).Text;
-            Assert.AreEqual(response, "Have access API?");
-
+            Assert.IsTrue(await FromBot("Hello"));
+            Assert.IsTrue(await FromBot("Your name"));
+            await FromUser("David");
+            Assert.IsTrue(await FromBot("Have access API?"));
             //Y1
-            toBot.Text = "no";
-            responses = await GetResponse(container, MakeRoot, toBot);
-            Assert.IsTrue(responses.Count == 1);
-            response = responses.Dequeue().Text;
-            Assert.AreEqual(response, "Try to get credentials");
+            await FromUser("no");
+            Assert.IsTrue(await FromBot("Try to get credentials"));
         }
 
         [TestMethod]
         public async Task RootDialogNoClient()
         {
-            Func<IDialog<object>> MakeRoot;
-            IContainer container;
-            var toBot = InitDialog(out MakeRoot, out container);
-
+             InitDialog(out MakeRoot, out container);
+            await GetResponses();
             //Y0
-            // act: sending the message
-            var responses = await GetResponse(container, MakeRoot, toBot);
-            Assert.IsTrue(responses.Count == 2);
-            Assert.AreEqual(responses.Dequeue().Text, "Hello");
-            Assert.AreEqual(responses.Dequeue().Text, "Your name");
-
-            toBot.Text = "David";
-            responses = await GetResponse(container, MakeRoot, toBot);
-            Assert.IsTrue(responses.Count == 1);
-            string response = ((HeroCard)responses.Dequeue().Attachments[0].Content).Text;
-            Assert.AreEqual(response, "Have access API?");
-
+            Assert.IsTrue(await FromBot("Hello"));
+            Assert.IsTrue(await FromBot("Your name"));
+            await FromUser("David");
+            Assert.IsTrue(await FromBot("Have access API?"));
             //Y1
-            toBot.Text = "yes";
-            responses = await GetResponse(container, MakeRoot, toBot);
-            Assert.IsTrue(responses.Count == 2);
-            response = responses.Dequeue().Text;
-            Assert.AreEqual(response, "Try to call endpoint");
-            response = ((HeroCard)responses.Dequeue().Attachments[0].Content).Text;
-            Assert.AreEqual(response, "Do you have doc?");
-
+            await FromUser("yes");
+            Assert.IsTrue(await FromBot("Try to call endpoint"));
+            Assert.IsTrue(await FromBot("Do you have doc?"));
             //N2
-            toBot.Text = "no";
-            responses = await GetResponse(container, MakeRoot, toBot);
-            Assert.IsTrue(responses.Count == 1);
-            response = responses.Dequeue().Text;
-            Assert.AreEqual(response, "You should ask someone");
+            await FromUser("no");
+            Assert.IsTrue(await FromBot("You should ask someone"));
         }
 
-        private static IMessageActivity InitDialog(out Func<IDialog<object>> MakeRoot, out IContainer container)
+        private void InitDialog(out Func<IDialog<object>> MakeRoot, out IContainer container)
         {
-            IMessageActivity toBot;
-            IDialog<object> echoDialog = new RootDialog().BuildChain();
-            // arrange
-            toBot = DialogTestBase.MakeTestMessage();
+            var echoDialog = new RootDialog().BuildChain();
+            toBot = MakeTestMessage();
             toBot.From.Id = Guid.NewGuid().ToString();
             toBot.Text = "ConversationUpdate";
-
             MakeRoot = () => echoDialog;
-
             new FiberTestBase.ResolveMoqAssembly(echoDialog);
             container = Build(Options.MockConnectorFactory | Options.ScopedQueue, echoDialog);
-            return toBot;
+
         }
 
-        private async Task<Queue<IMessageActivity>> GetResponse(IContainer container, Func<IDialog<object>> makeRoot, IMessageActivity toBot)
+        private async Task<Queue<IMessageActivity>> GetResponse(IContainer container, Func<IDialog<object>> makeRoot,
+            IMessageActivity toBot)
         {
             using (var scope = DialogModule.BeginLifetimeScope(container, toBot))
             {
                 DialogModule_MakeRoot.Register(scope, makeRoot);
                 //  var token = CancellationToken.None;
-                // act: sending the message
                 using (new LocalizedScope(toBot.Locale))
                 {
                     var task = scope.Resolve<IPostToBot>();

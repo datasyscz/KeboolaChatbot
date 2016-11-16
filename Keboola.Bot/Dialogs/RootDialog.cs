@@ -79,8 +79,12 @@ namespace Keboola.Bot.Dialogs
                                 ctx.UserData.SetValue("Finish", true);
                                 return
                                     Chain.Return("Did you try to get some data via REST Client?")
-                                        .PostToUser()
-                                        .WaitToBot();
+                                        .PostToUser().ContinueWith<object, object>(async (ctx3, res3) =>
+                                        {
+                                            await res3;
+                                            
+                                            return ConfigureForm.RootConversation();
+                                        });
                             }
                             //N3
                             ctx.UserData.SetValue("Finish", true);

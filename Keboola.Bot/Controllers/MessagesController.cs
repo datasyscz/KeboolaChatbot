@@ -7,6 +7,7 @@ using System.Web.Http;
 using Autofac;
 using Keboola.Bot.Dialogs;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.FormFlow;
 using Microsoft.Bot.Connector;
 
 namespace Keboola.Bot
@@ -44,9 +45,8 @@ namespace Keboola.Bot
                     //Ignor facebook first message
                     if (activity.ChannelId.ToLower() != "facebook" || activity.Type != ActivityTypes.ConversationUpdate)
                     {
-                        //Doesnt log welcome message
-                        if (activity.ChannelId.ToLower() != "directline" ||
-                            activity.Type != ActivityTypes.ConversationUpdate)
+                        //Dont log welcome message
+                        if (!(activity.ChannelId.ToLower() == "directline" && (activity.Type == ActivityTypes.ConversationUpdate || activity.Text == "ConversationStart")))
                         {
                             //Log incoming message
                             await LogMessage(activity);
@@ -69,9 +69,10 @@ namespace Keboola.Bot
                             try
                             {
                                 //Dialog
-                                await Conversation.SendAsync(activity, new RootDialog().BuildChain);
+                             //   await Conversation.SendAsync(activity, ConfigureDialog.RootConversation);
+                                 await Conversation.SendAsync(activity, new RootDialog().BuildChain);
                             }
-                            catch (Exception)
+                            catch (Exception ex)
                             {
                                 await Reset(activity, userData, stateClient);
                                 await Conversation.SendAsync(activity, new RootDialog().BuildChain);

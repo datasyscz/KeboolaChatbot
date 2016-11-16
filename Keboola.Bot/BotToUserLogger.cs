@@ -50,12 +50,10 @@ namespace Keboola.Bot
         public virtual async Task PostAsync(IMessageActivity message,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            // loging outgoing message
-
-            var conversation = await _db.FindConversation(message);
-            conversation.AddMessage(message, false);
-            await _db.SaveChangesAsync();
             await _inner.PostAsync(message, cancellationToken);
+            // loging outgoing message
+            ConversationLogger logger = new ConversationLogger(_db);
+            await logger.LogOutgoingMessage(message, cancellationToken);
         }
     }
 
