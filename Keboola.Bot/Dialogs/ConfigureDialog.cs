@@ -6,6 +6,8 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.FormFlow;
 using Microsoft.Bot.Builder.FormFlow.Advanced;
 using Keboola.Bot.Dialogs.ConfigurationDialogs.Auth;
+using Keboola.Bot.Dialogs.ConfigurationDialogs.PagingType;
+
 #pragma warning disable 649
 #pragma warning disable CS1998
 
@@ -28,7 +30,7 @@ namespace Keboola.Bot.Dialogs
         public string Name;
         public string Documentation;
         public string BaseUrl;
-        public AuthTypeoption AuthType;
+        public AuthTypeoption? AuthType;
 
         public static IForm<ConfigureForm> BuildForm()
         {
@@ -37,43 +39,56 @@ namespace Keboola.Bot.Dialogs
                 .Field(nameof(Name), "API Name")
                 .Field(nameof(Documentation), "API Documentation")
                 .Field(nameof(BaseUrl), "API baseUrl")
-                // .Field(nameof(Documentation))
+                .Confirm("Is this your selection?\n{*}")
                 .Field(nameof(AuthType), "Auth Type{||}")
+
                 .Build();
         }
 
         public static IDialog<object> RootConversation()
         {
-            return Chain.From(() => FormDialog.FromForm(ConfigureForm.BuildForm))
+            return Chain.From(() => FormDialog.FromForm(ConfigureForm.BuildForm, FormOptions.PromptInStart))
                 .Switch(
                     new Case<ConfigureForm, IDialog<object>>(msg => msg.AuthType == AuthTypeoption.login,
                         (ctx, msg) =>
                         {
-                            return LoginForm.RootDialog();
+                            return Chain.From(() => FormDialog.FromForm(LoginForm.BuildForm, FormOptions.PromptInStart));
                         }),
-                     new Case<ConfigureForm, IDialog<object>>(msg => msg.AuthType == AuthTypeoption.basic,
+                    new Case<ConfigureForm, IDialog<object>>(msg => msg.AuthType == AuthTypeoption.basic,
                         (ctx, msg) =>
                         {
-                            return BasicForm.RootDialog();
+                            return Chain.From(() => FormDialog.FromForm(BasicForm.BuildForm, FormOptions.PromptInStart));
                         }),
-                      new Case<ConfigureForm, IDialog<object>>(msg => msg.AuthType == AuthTypeoption.query,
+                    new Case<ConfigureForm, IDialog<object>>(msg => msg.AuthType == AuthTypeoption.query,
                         (ctx, msg) =>
                         {
-                            return QueryForm.RootDialog();
+                            return Chain.From(() => FormDialog.FromForm(QueryForm.BuildForm, FormOptions.PromptInStart));
                         }),
-                       new Case<ConfigureForm, IDialog<object>>(msg => msg.AuthType == AuthTypeoption.oauth10,
+                    new Case<ConfigureForm, IDialog<object>>(msg => msg.AuthType == AuthTypeoption.oauth10,
                         (ctx, msg) =>
                         {
-                            return Oauth10Form.RootDialog();
+                            return
+                                Chain.From(() => FormDialog.FromForm(Oauth10Form.BuildForm, FormOptions.PromptInStart));
                         }),
-                        new Case<ConfigureForm, IDialog<object>>(msg => msg.AuthType == AuthTypeoption.oauth20,
+                    new Case<ConfigureForm, IDialog<object>>(msg => msg.AuthType == AuthTypeoption.oauth20,
                         (ctx, msg) =>
                         {
-                            return Oauth20Form.RootDialog();
+                            return
+                                Chain.From(() => FormDialog.FromForm(Oauth10Form.BuildForm, FormOptions.PromptInStart));
                         })
-                        ).Unwrap().PostToUser();
-        }
+                ).Unwrap()
+                .ContinueWith<object, object>(
+                    async (ctx, res) =>
+                    {
+                        return PagingTypeForm.RootConversation();
+                    }
+                )
+                .ContinueWith<object, object>(
+                    async (ctx, res) =>
+                    {
+                        return new EndpointDialog();
+                    });
 
-       
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Keboola.Bot.Dialogs.ConfigurationDialogs.PagingType;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.FormFlow;
 
@@ -18,12 +19,19 @@ namespace Keboola.Bot.Dialogs.ConfigurationDialogs.Auth
             return new FormBuilder<BasicForm>()
                 .Field(nameof(UserName), "username")
                 .Field(nameof(Password), "password")
+                .Confirm("Is this your selection?\n{*}")
                 .Build();
         }
 
-        public static IDialog<BasicForm> RootDialog()
+        public static IDialog<object> RootDialog()
         {
-            return Chain.From(() => FormDialog.FromForm(BasicForm.BuildForm));
+            return Chain.From(() => FormDialog.FromForm(BasicForm.BuildForm, FormOptions.PromptInStart))
+                .ContinueWith<object, object>(
+                    async (ctx, res) =>
+                    {
+                        await res;
+                        return PagingTypeForm.RootConversation();
+                    });
         }
     }
 }

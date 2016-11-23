@@ -109,7 +109,14 @@
     <Compile Include="Dialogs\ConfigurationDialogs\Auth\Oauth10.cs" />
     <Compile Include="Dialogs\ConfigurationDialogs\Auth\Oauth20.cs" />
     <Compile Include="Dialogs\ConfigurationDialogs\Auth\Query.cs" />
+    <Compile Include="Dialogs\ConfigurationDialogs\PagingType\Cursor.cs" />
+    <Compile Include="Dialogs\ConfigurationDialogs\PagingType\Offset.cs" />
+    <Compile Include="Dialogs\ConfigurationDialogs\PagingType\PageNum.cs" />
+    <Compile Include="Dialogs\ConfigurationDialogs\PagingType\PagingTypeForm.cs" />
+    <Compile Include="Dialogs\ConfigurationDialogs\PagingType\ResponseParam.cs" />
+    <Compile Include="Dialogs\ConfigurationDialogs\PagingType\ResponseUrl.cs" />
     <Compile Include="Dialogs\ConfigureDialog.cs" />
+    <Compile Include="Dialogs\EndpointDialog.cs" />
     <Compile Include="Dialogs\RootDialog.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -120,9 +127,18 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

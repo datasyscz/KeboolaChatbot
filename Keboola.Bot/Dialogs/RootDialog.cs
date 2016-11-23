@@ -76,16 +76,21 @@ namespace Keboola.Bot.Dialogs
                             if (await res)
                             {
                                 //Y3
-                                ctx.UserData.SetValue("Finish", true);
-                                return
-                                    Chain.Return("Did you try to get some data via REST Client?")
-                                        .PostToUser().ContinueWith<object, object>(async (ctx3, res3) =>
+                                return Chain.From(
+                                    () =>
+                                        new PromptDialog.PromptConfirm("Did you try to get some data via REST Client?",
+                                            "Don't understand. Did you try to get some data via REST Client?", 20))
+                                    .ContinueWith(
+                                        async (ctx2, res2) =>
                                         {
-                                            await res3;
-                                            
-                                            return ConfigureForm.RootConversation();
-                                        });
+                                            if (await res2)
+                                                return ConfigureForm.RootConversation();
+                                            else
+                                                return Chain.Return("...").PostToUser().WaitToBot();
+                                        }
+                                    );
                             }
+
                             //N3
                             ctx.UserData.SetValue("Finish", true);
                             return Chain.Return("Try post man").PostToUser().WaitToBot();
