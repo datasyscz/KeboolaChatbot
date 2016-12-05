@@ -29,7 +29,7 @@ namespace Keboola.Bot
                 "DefaultApi",
                 "api/{controller}/{id}",
                 new {id = RouteParameter.Optional}
-                );
+            );
         }
     }
 }

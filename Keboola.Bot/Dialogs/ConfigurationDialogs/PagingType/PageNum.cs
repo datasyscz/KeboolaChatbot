@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Microsoft.Bot.Builder.FormFlow;
 
 namespace Keboola.Bot.Dialogs.ConfigurationDialogs.PagingType
@@ -9,9 +6,9 @@ namespace Keboola.Bot.Dialogs.ConfigurationDialogs.PagingType
     [Serializable]
     public class PageNum
     {
-        public int PageParam;
         public int Limit;
         public int LimitParam;
+        public int PageParam;
 
         public static IForm<PageNum> BuildForm()
         {

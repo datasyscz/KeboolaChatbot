@@ -9,7 +9,6 @@ using API;
 using Autofac;
 using Keboola.Bot.Dialogs;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.FormFlow;
 using Microsoft.Bot.Connector;
 
 namespace Keboola.Bot
@@ -31,7 +30,8 @@ namespace Keboola.Bot
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
             builder.Update(Conversation.Container);
-            RootDialog.WitAI = new WitAI(WebConfigurationManager.AppSettings["WitAIToken"], WebConfigurationManager.AppSettings["WitAIAccept"]);
+            RootDialog.WitAI = new WitAI(WebConfigurationManager.AppSettings["WitAIToken"],
+                WebConfigurationManager.AppSettings["WitAIAccept"]);
         }
 
         /// <summary>
@@ -40,8 +40,8 @@ namespace Keboola.Bot
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody] Activity activity)
         {
-            if (activity.Type == ActivityTypes.Message || activity.Type == ActivityTypes.ContactRelationUpdate ||
-                activity.Type == ActivityTypes.ConversationUpdate )
+            if ((activity.Type == ActivityTypes.Message) || (activity.Type == ActivityTypes.ContactRelationUpdate) ||
+                (activity.Type == ActivityTypes.ConversationUpdate))
             {
                 //Default message
                 Activity isTyping = null;
@@ -51,17 +51,17 @@ namespace Keboola.Bot
                 await connector.Conversations.ReplyToActivityAsync(isTyping);
 
 
-                if (activity.From.Id != WebConfigurationManager.AppSettings["BotId"]) //Ignor initial message from direct line service
-                {
-                    //Ignor facebook first message
-                    if (activity.ChannelId.ToLower() != "facebook" || activity.Type != ActivityTypes.ConversationUpdate)
+                if (activity.From.Id != WebConfigurationManager.AppSettings["BotId"])
+                    //Ignor initial message from direct line service
+                    if ((activity.ChannelId.ToLower() != "facebook") ||
+                        (activity.Type != ActivityTypes.ConversationUpdate))
                     {
                         //Dont log welcome message
-                        if (!(activity.ChannelId.ToLower() == "directline" && (activity.Type == ActivityTypes.ConversationUpdate || activity.Text == "ConversationStart")))
-                        {
-                            //Log incoming message
+                        if (
+                            !((activity.ChannelId.ToLower() == "directline") &&
+                              ((activity.Type == ActivityTypes.ConversationUpdate) ||
+                               (activity.Text == "ConversationStart"))))
                             await LogMessage(activity);
-                        }
 
                         //Load user context data
                         var stateClient = activity.GetStateClient();
@@ -70,12 +70,12 @@ namespace Keboola.Bot
 
                         //handle predefined commands
                         var command = CommandHandler.Handle(activity);
-                        if (command == CommandHandler.CommandType.Reset || activity.Action?.ToLower() == "remove")
+                        if ((command == CommandHandler.CommandType.Reset) || (activity.Action?.ToLower() == "remove"))
                         {
                             await Reset(activity, userData, stateClient);
                             finish = false;
                         }
-                        else if(command == CommandHandler.CommandType.Help)
+                        else if (command == CommandHandler.CommandType.Help)
                         {
                             var helpActivity = activity.CreateReply("Help");
                             await connector.Conversations.ReplyToActivityAsync(helpActivity);
@@ -86,8 +86,8 @@ namespace Keboola.Bot
                             try
                             {
                                 //Dialog
-                             //   await Conversation.SendAsync(activity, ConfigureDialog.RootConversation);
-                                 await Conversation.SendAsync(activity, new RootDialog().BuildChain);
+                                //   await Conversation.SendAsync(activity, ConfigureDialog.RootConversation);
+                                await Conversation.SendAsync(activity, new RootDialog().BuildChain);
                             }
                             catch (Exception ex)
                             {
@@ -103,7 +103,6 @@ namespace Keboola.Bot
                             await connector.Conversations.ReplyToActivityAsync(reply);
                         }
                     }
-                }
             }
             else
             {
@@ -115,7 +114,6 @@ namespace Keboola.Bot
 
         private async Task LogMessage(Activity activity)
         {
-            
             //Log incoming message
             var logger = new ConversationLogger(_db);
             var conversationLog = await logger.AddOrUpdateConversation(activity);

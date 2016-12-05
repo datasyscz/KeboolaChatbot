@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Keboola.Bot.Dialogs.ConfigurationDialogs.Auth;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.FormFlow;
 
@@ -10,25 +6,15 @@ namespace Keboola.Bot.Dialogs.ConfigurationDialogs.PagingType
 {
     public enum PagingType
     {
-        [Terms("offset")]
-        [Describe("offset")]
-        offset,
+        [Terms("offset")] [Describe("offset")] offset,
 
-        [Terms("responseparam", "response.param", "param")]
-        [Describe("response.param")]
-        responseParam,
+        [Terms("responseparam", "response.param", "param")] [Describe("response.param")] responseParam,
 
-        [Terms("response.url", "responseurl", "url")]
-        [Describe("response.url")]
-        responseUrl,
+        [Terms("response.url", "responseurl", "url")] [Describe("response.url")] responseUrl,
 
-        [Terms("page.num", "pagenum", "num")]
-        [Describe("page.num")]
-        pagenum,
+        [Terms("page.num", "pagenum", "num")] [Describe("page.num")] pagenum,
 
-        [Terms("cur", "cursor")]
-        [Describe("cursor")]
-        cursor
+        [Terms("cur", "cursor")] [Describe("cursor")] cursor
     }
 
     [Serializable]
@@ -45,7 +31,7 @@ namespace Keboola.Bot.Dialogs.ConfigurationDialogs.PagingType
 
         public static IDialog<object> RootConversation()
         {
-            return Chain.From(() => FormDialog.FromForm(PagingTypeForm.BuildForm, FormOptions.PromptInStart))
+            return Chain.From(() => FormDialog.FromForm(BuildForm, FormOptions.PromptInStart))
                 .Switch(
                     new Case<PagingTypeForm, IDialog<object>>(msg => msg.Paging == PagingType.offset,
                         (ctx, msg) =>
@@ -67,13 +53,15 @@ namespace Keboola.Bot.Dialogs.ConfigurationDialogs.PagingType
                     new Case<PagingTypeForm, IDialog<object>>(msg => msg.Paging == PagingType.responseParam,
                         (ctx, msg) =>
                         {
-                            return Chain.From(() => FormDialog.FromForm(ResponseParam.BuildForm, FormOptions.PromptInStart));
+                            return
+                                Chain.From(() => FormDialog.FromForm(ResponseParam.BuildForm, FormOptions.PromptInStart));
                         })
                     ,
                     new Case<PagingTypeForm, IDialog<object>>(msg => msg.Paging == PagingType.responseUrl,
                         (ctx, msg) =>
                         {
-                            return Chain.From(() => FormDialog.FromForm(ResponseUrl.BuildForm, FormOptions.PromptInStart));
+                            return
+                                Chain.From(() => FormDialog.FromForm(ResponseUrl.BuildForm, FormOptions.PromptInStart));
                         })
                 ).Unwrap();
         }

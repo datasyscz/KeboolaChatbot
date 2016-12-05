@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Keboola.Bot.Dialogs.ConfigurationDialogs.PagingType;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.FormFlow;
@@ -23,8 +20,8 @@ namespace Keboola.Bot.Dialogs.ConfigurationDialogs.Auth
 
         public static IDialog<object> RootDialog()
         {
-            return Chain.From(() => FormDialog.FromForm(QueryForm.BuildForm, FormOptions.PromptInStart))
-                 .ContinueWith<object, object>(
+            return Chain.From(() => FormDialog.FromForm(BuildForm, FormOptions.PromptInStart))
+                .ContinueWith<object, object>(
                     async (ctx, res) =>
                     {
                         await res;

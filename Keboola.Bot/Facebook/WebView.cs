@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Microsoft.Bot.Builder.ConnectorEx;
-using Microsoft.Bot.Connector;
-
-namespace Keboola.Bot.Facebook
+﻿namespace Keboola.Bot.Facebook
 {
     public class Messenger
     {
         public MessengerChannelData ChannelData { get; set; }
     }
+
     public class MessengerChannelData
     {
         public string notification_type { get; set; }
         public MessengerAttachment attachment { get; set; }
     }
+
     public class MessengerAttachment
     {
         public string type { get; set; }
@@ -47,14 +42,12 @@ namespace Keboola.Bot.Facebook
 
     public class TestFB
     {
-
-     
     }
 
     public class Rootobject
     {
+        public string notification_type = "NO_PUSH";
         public Attachment attachment { get; set; }
-        public string notification_type ="NO_PUSH";
     }
 
     public class Message
@@ -85,15 +78,12 @@ namespace Keboola.Bot.Facebook
 
     public class Button
     {
-        public bool messenger_extensions;
         internal string fallback_url;
+        public bool messenger_extensions;
 
         public string type { get; set; }
         public string url { get; set; }
         public string title { get; set; }
         public string webview_height_ratio { get; set; }
     }
-
-
-
 }

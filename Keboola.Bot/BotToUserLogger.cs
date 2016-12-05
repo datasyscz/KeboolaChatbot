@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Threading;
 using System.Threading.Tasks;
-using Keboola.Bot.Facebook;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Connector;
@@ -54,7 +52,7 @@ namespace Keboola.Bot
         {
             await _inner.PostAsync(message, cancellationToken);
             // loging outgoing message
-            ConversationLogger logger = new ConversationLogger(_db);
+            var logger = new ConversationLogger(_db);
             await logger.LogOutgoingMessage(message, cancellationToken);
         }
     }
@@ -71,7 +69,7 @@ namespace Keboola.Bot
             string intentAnswer;
             if (message.Text != string.Empty)
                 message.Text = await GetIntent(message.Text, cancellationToken);
-            else if (message.Attachments.Count > 0 && message.Attachments[0].Content is HeroCard)
+            else if ((message.Attachments.Count > 0) && message.Attachments[0].Content is HeroCard)
             {
                 var heroCard = (HeroCard) message.Attachments[0].Content;
                 heroCard.Text = await GetIntent(heroCard.Text, cancellationToken);

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Microsoft.Bot.Builder.FormFlow;
 
 namespace Keboola.Bot.Dialogs.ConfigurationDialogs.PagingType
@@ -9,8 +6,8 @@ namespace Keboola.Bot.Dialogs.ConfigurationDialogs.PagingType
     [Serializable]
     public class ResponseParam
     {
-        public string ResponseParamStr;
         public string QueryParam;
+        public string ResponseParamStr;
         public string ScrollRequestEndpoint;
         public string ScrollRequestMethod;
         public string ScrollRequestParams;

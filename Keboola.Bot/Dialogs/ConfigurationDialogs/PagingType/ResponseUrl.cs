@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Microsoft.Bot.Builder.FormFlow;
 
 namespace Keboola.Bot.Dialogs.ConfigurationDialogs.PagingType
@@ -9,8 +6,8 @@ namespace Keboola.Bot.Dialogs.ConfigurationDialogs.PagingType
     [Serializable]
     public class ResponseUrl
     {
-        public string UrlKey;
         public string IncludeParams;
+        public string UrlKey;
 
         public static IForm<ResponseUrl> BuildForm()
         {

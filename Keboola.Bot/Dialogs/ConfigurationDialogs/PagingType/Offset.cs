@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using API;
-using Keboola.Bot.Dialogs.ConfigurationDialogs.Auth;
 using Microsoft.Bot.Builder.FormFlow;
 
 namespace Keboola.Bot.Dialogs.ConfigurationDialogs.PagingType

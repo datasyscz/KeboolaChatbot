@@ -39,8 +39,8 @@ namespace Keboola.Bot
                         a =>
                             (a.FrameworkId == activity.Conversation.Id)
                             &&
-                            a.BaseUri == activity.ServiceUrl
-                    //Need check service url too, ConversationID is unique only for serviceUrl 
+                            (a.BaseUri == activity.ServiceUrl)
+                        //Need check service url too, ConversationID is unique only for serviceUrl 
                     );
         }
     }

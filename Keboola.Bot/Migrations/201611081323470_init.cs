@@ -7,41 +7,41 @@ namespace Keboola.Bot.Migrations
         public override void Up()
         {
             CreateTable(
-                "dbo.Channels",
-                c => new
-                {
-                    Id = c.Int(false, true),
-                    Name = c.String(),
-                    FrameworkId = c.String()
-                })
+                    "dbo.Channels",
+                    c => new
+                    {
+                        Id = c.Int(false, true),
+                        Name = c.String(),
+                        FrameworkId = c.String()
+                    })
                 .PrimaryKey(t => t.Id);
 
             CreateTable(
-                "dbo.Conversations",
-                c => new
-                {
-                    ConversationID = c.Int(false, true),
-                    Name = c.String(),
-                    FrameworkId = c.String(),
-                    Detail = c.String(),
-                    BaseUri = c.String(),
-                    User_Id = c.Int()
-                })
+                    "dbo.Conversations",
+                    c => new
+                    {
+                        ConversationID = c.Int(false, true),
+                        Name = c.String(),
+                        FrameworkId = c.String(),
+                        Detail = c.String(),
+                        BaseUri = c.String(),
+                        User_Id = c.Int()
+                    })
                 .PrimaryKey(t => t.ConversationID)
                 .ForeignKey("dbo.Users", t => t.User_Id)
                 .Index(t => t.User_Id);
 
             CreateTable(
-                "dbo.Messages",
-                c => new
-                {
-                    MessageId = c.Int(false, true),
-                    Text = c.String(),
-                    Date = c.DateTime(false),
-                    SendedByUser = c.Boolean(false),
-                    Customer_Id = c.Int(),
-                    Conversation_ConversationID = c.Int()
-                })
+                    "dbo.Messages",
+                    c => new
+                    {
+                        MessageId = c.Int(false, true),
+                        Text = c.String(),
+                        Date = c.DateTime(false),
+                        SendedByUser = c.Boolean(false),
+                        Customer_Id = c.Int(),
+                        Conversation_ConversationID = c.Int()
+                    })
                 .PrimaryKey(t => t.MessageId)
                 .ForeignKey("dbo.Users", t => t.Customer_Id)
                 .ForeignKey("dbo.Conversations", t => t.Conversation_ConversationID)
@@ -49,16 +49,16 @@ namespace Keboola.Bot.Migrations
                 .Index(t => t.Conversation_ConversationID);
 
             CreateTable(
-                "dbo.Users",
-                c => new
-                {
-                    Id = c.Int(false, true),
-                    ConversationID = c.Int(false),
-                    BaseUri = c.String(),
-                    Name = c.String(),
-                    BotChannel_Id = c.Int(),
-                    UserChannel_Id = c.Int()
-                })
+                    "dbo.Users",
+                    c => new
+                    {
+                        Id = c.Int(false, true),
+                        ConversationID = c.Int(false),
+                        BaseUri = c.String(),
+                        Name = c.String(),
+                        BotChannel_Id = c.Int(),
+                        UserChannel_Id = c.Int()
+                    })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Channels", t => t.BotChannel_Id)
                 .ForeignKey("dbo.Channels", t => t.UserChannel_Id)
@@ -66,14 +66,14 @@ namespace Keboola.Bot.Migrations
                 .Index(t => t.UserChannel_Id);
 
             CreateTable(
-                "dbo.IntentAnswers",
-                c => new
-                {
-                    Id = c.Int(false, true),
-                    Name = c.String(maxLength: 100),
-                    Answer = c.String(false),
-                    Advanced = c.Boolean(false)
-                })
+                    "dbo.IntentAnswers",
+                    c => new
+                    {
+                        Id = c.Int(false, true),
+                        Name = c.String(maxLength: 100),
+                        Answer = c.String(false),
+                        Advanced = c.Boolean(false)
+                    })
                 .PrimaryKey(t => t.Id)
                 .Index(t => t.Name, unique: true);
         }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Threading;
 using System.Threading.Tasks;
 using Keboola.Shared;
@@ -9,7 +8,6 @@ namespace Keboola.Bot
 {
     public interface IConversationLogger
     {
-
     }
 
     public class ConversationLogger
@@ -45,31 +43,27 @@ namespace Keboola.Bot
                 var botChannel =
                     await
                         _db.Channel.FirstOrDefaultAsync(
-                            a => a.FrameworkId == activity.Recipient.Id && a.Name == activity.Recipient.Name);
+                            a => (a.FrameworkId == activity.Recipient.Id) && (a.Name == activity.Recipient.Name));
                 if (botChannel == null)
-                {
                     conversation.User.BotChannel = new Channel
                     {
                         FrameworkId = activity.Recipient.Id,
                         Name = activity.Recipient.Name
                     };
-                }
                 else
                     conversation.User.BotChannel = botChannel;
-             
+
                 //log userChannel
                 var userChannel =
                     await
                         _db.Channel.FirstOrDefaultAsync(
-                            a => a.FrameworkId == activity.From.Id && a.Name == activity.From.Name);
+                            a => (a.FrameworkId == activity.From.Id) && (a.Name == activity.From.Name));
                 if (userChannel == null)
-                {
                     conversation.User.UserChannel = new Channel
                     {
                         FrameworkId = activity.From.Id,
                         Name = activity.From.Name
                     };
-                }
                 else
                     conversation.User.UserChannel = userChannel;
                 _db.Conversation.Add(conversation);
