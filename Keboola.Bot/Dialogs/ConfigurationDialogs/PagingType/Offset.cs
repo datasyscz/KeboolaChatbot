@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
+using API;
 using Keboola.Bot.Dialogs.ConfigurationDialogs.Auth;
 using Microsoft.Bot.Builder.FormFlow;
 
@@ -10,18 +12,23 @@ namespace Keboola.Bot.Dialogs.ConfigurationDialogs.PagingType
     [Serializable]
     public class Offset
     {
-        public int Limit;
-        public int LimitParam;
-        public int OffsetParam;
+        public string Limit;
+        public string LimitParam;
+        public string OffsetParam;
 
         public static IForm<Offset> BuildForm()
         {
             return new FormBuilder<Offset>()
-                .Field(nameof(Limit), "offset limit")
-                .Field(nameof(LimitParam), "offset limitparam")
-                .Field(nameof(OffsetParam), "offset offsetparam")
+                .Field(nameof(Limit), "offset limit", validate: new Validation(RootDialog.WitAI).Int)
+                .Field(nameof(LimitParam), "offset limitParam", validate: new Validation(RootDialog.WitAI).Int)
+                .Field(nameof(OffsetParam), "offset offsetparam", validate: new Validation(RootDialog.WitAI).Int)
                 .Confirm("Is this your selection?\n{*}")
                 .Build();
+        }
+
+        private static Task<ValidateResult> Validate(object state, object value)
+        {
+            throw new NotImplementedException();
         }
     }
 }

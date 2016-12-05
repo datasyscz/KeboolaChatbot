@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Web.Configuration;
+using API;
 using Microsoft.Bot.Builder.Dialogs;
 
 namespace Keboola.Bot.Dialogs
@@ -6,6 +8,8 @@ namespace Keboola.Bot.Dialogs
     [Serializable]
     public class RootDialog
     {
+        public static WitAI WitAI;
+
         public IDialog<object> BuildChain()
         {
             return Chain.Return("Hello")

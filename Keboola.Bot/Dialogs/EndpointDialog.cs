@@ -3,17 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity.Validation;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.FormFlow;
 using Microsoft.Bot.Connector;
-using Microsoft.Bot.Builder.Internals.Fibers;
 
 namespace Keboola.Bot.Dialogs
 {
@@ -90,13 +80,14 @@ namespace Keboola.Bot.Dialogs
             var msg = await argument;
             if (!string.IsNullOrEmpty(msg.Text))
             {
-                int endpoints = 0;
-                if (int.TryParse(msg.Text, out endpoints))
+                //int endpoints = 0;
+                var endpoints = await new Validation(RootDialog.WitAI).Int(null, msg.Text);
+                if (endpoints.IsValid)
                 {
-                    if (endpoints != 0)
+                    if ((int)endpoints.Value != 0)
                     {
-                        EndpointCollection.EnpointsCount = endpoints;
-                        for (int i = 0; i < endpoints; i++)
+                        EndpointCollection.EnpointsCount = (int)endpoints.Value;
+                        for (int i = 0; i < (int)endpoints.Value; i++)
                         {
                             var newRootEndpoint = new Endpoint() {RootEndpoint = true};
                             EndpointCollection.Endpoints.Add(newRootEndpoint);
@@ -143,18 +134,19 @@ namespace Keboola.Bot.Dialogs
             }
             else if (EndpointsQueue[0].SubEnpointsCount == null)
             {
-                int subEndpoints;
-                if (!int.TryParse(msg.Text, out subEndpoints))
+             
+                var subEndpoints = await new Validation(RootDialog.WitAI).Int(null, msg.Text);
+                if (!subEndpoints.IsValid)
                 {
                     await context.PostAsync("Don't understand. How many subendpoints?");
                     context.Wait(AddEndpointToCollection);
                 }
                 else
                 {
-                    EndpointsQueue[0].SubEnpointsCount = subEndpoints;
-                    if (subEndpoints != 0)
+                    EndpointsQueue[0].SubEnpointsCount = (int)subEndpoints.Value;
+                    if ((int)subEndpoints.Value != 0)
                     {
-                        for(int i = 0; i < subEndpoints ; i++)
+                        for(int i = 0; i < (int)subEndpoints.Value; i++)
                         {
                             var newSubEndpoint = new Endpoint();
                             newSubEndpoint.parentName = EndpointsQueue[0].EndpointName;

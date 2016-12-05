@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using AI;
+using API;
 using Autofac;
 using Keboola.Bot.Dialogs;
 using Microsoft.Bot.Builder.Dialogs;
@@ -10,6 +12,7 @@ using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Connector;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace Keboola.Bot.Tests
 {
@@ -20,6 +23,42 @@ namespace Keboola.Bot.Tests
         private Func<IDialog<object>> MakeRoot;
         private Queue<IMessageActivity> responses = new Queue<IMessageActivity>();
         private IMessageActivity toBot;
+
+
+        [TestMethod]
+        public async Task TestOffsetY10()
+        {
+            await TestLoginY5(); 
+            await FromUser("offset");
+            Assert.IsTrue(await FromBot("offset limit"));
+            await FromUser("5");
+            Assert.IsTrue(await FromBot("offset limitParam"));
+            await FromUser("5");
+            Assert.IsTrue(await FromBot("offset offsetParam"));
+            await FromUser("5");
+            Assert.IsTrue(await FromBot("Is this your selection?"));
+            await FromUser("yes");
+        }
+
+        [TestMethod]
+        public async Task TestResponsepParamY11()
+        {
+
+            await TestLoginY5();
+            await FromUser("responseparam");
+            Assert.IsTrue(await FromBot("responseparam"));
+            await FromUser("5");
+            Assert.IsTrue(await FromBot("responseparam queryparam"));
+            await FromUser("5");
+            Assert.IsTrue(await FromBot("responseparam scrollrequestendpoint"));
+            await FromUser("5");
+            Assert.IsTrue(await FromBot("responseparam scrollrequestmethod"));
+            await FromUser("5");
+            Assert.IsTrue(await FromBot("responseparam scrollrequestparams"));
+            await FromUser("5");
+            Assert.IsTrue(await FromBot("Is this your selection?"));
+            await FromUser("yes");
+        }
 
         [TestMethod]
         public async Task TestLoginY5()
@@ -33,6 +72,9 @@ namespace Keboola.Bot.Tests
             await FromUser("Foo User");
             Assert.IsTrue(await FromBot("password"));
             await FromUser("Password654");
+            Assert.IsTrue(await FromBot("Is this your selection?"));
+            await FromUser("yes");
+            Assert.IsTrue(await FromBot("Pagination Type"));
         }
 
         [TestMethod]
@@ -46,6 +88,8 @@ namespace Keboola.Bot.Tests
             await FromUser("Api documentation foo");
             Assert.IsTrue(await FromBot("API baseUrl"));
             await FromUser("http://www.foo.com/");
+            Assert.IsTrue(await  FromBot("Is this your selection?"));
+            await FromUser("yes");
             Assert.IsTrue(await FromBot("Auth Type"));
         }
 
@@ -58,6 +102,9 @@ namespace Keboola.Bot.Tests
             await FromUser("Foo User");
             Assert.IsTrue(await FromBot("password"));
             await FromUser("Password654");
+            Assert.IsTrue(await FromBot("Is this your selection?"));
+            await FromUser("yes");
+            Assert.IsTrue(await FromBot("Pagination Type"));
         }
 
         [TestMethod]
@@ -67,7 +114,9 @@ namespace Keboola.Bot.Tests
             await FromUser("query");
             Assert.IsTrue(await FromBot("apiKey"));
             await FromUser("test api key 6+5sa4dsaAAD*+sad441");
-            Assert.IsTrue(await FromBot("Pagination Type?"));
+            Assert.IsTrue(await FromBot("Is this your selection?"));
+            await FromUser("yes");
+            Assert.IsTrue(await FromBot("Pagination Type"));
         }
 
         [TestMethod]
@@ -81,7 +130,9 @@ namespace Keboola.Bot.Tests
             await FromUser("test api key 6+5sa4dsaAAD*+sad441");
             Assert.IsTrue(await FromBot("appSecret"));
             await FromUser("6+5sa4dsaAAD*+sad441");
-            Assert.IsTrue(await FromBot("Pagination Type?"));
+            Assert.IsTrue(await FromBot("Is this your selection?"));
+            await FromUser("yes");
+            Assert.IsTrue(await FromBot("Pagination Type"));
         }
 
         [TestMethod]
@@ -92,7 +143,9 @@ namespace Keboola.Bot.Tests
             Assert.IsTrue(await FromBot("TBD"));
             //Y6
             await FromUser("???");
-            Assert.IsTrue(await FromBot("Pagination Type?"));
+            Assert.IsTrue(await FromBot("Is this your selection"));
+            await FromUser("yes");
+            Assert.IsTrue(await FromBot("Pagination Type"));
         }
 
         public async Task FromUser(string text)
@@ -116,10 +169,10 @@ namespace Keboola.Bot.Tests
             {
                 var response = ((HeroCard)msg.Attachments[0].Content).Text;
                 Debug.WriteLine("Bot:" + response + " (hero)");
-                return response == text;
+                return response.ToLower().Contains(text.ToLower());
             }
             Debug.WriteLine("Bot:" + msg.Text);
-            return msg.Text == text;
+            return msg.Text.ToLower().Contains(text.ToLower());
         }
 
 

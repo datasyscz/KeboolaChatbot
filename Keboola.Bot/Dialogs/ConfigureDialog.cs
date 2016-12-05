@@ -17,10 +17,20 @@ namespace Keboola.Bot.Dialogs
 
     public enum AuthTypeoption
     {
+        [Describe("basic")]
+        [Terms("basic")]
         basic,
+        [Terms("query")]
+        [Describe("query")]
         query,
+        [Terms("login")]
+        [Describe("login")]
         login,
+        [Terms("oauth10")]
+        [Describe("oauth10")]
         oauth10,
+        [Terms("oauth20")]
+        [Describe("oauth20")]
         oauth20
     }
 
@@ -74,7 +84,7 @@ namespace Keboola.Bot.Dialogs
                         (ctx, msg) =>
                         {
                             return
-                                Chain.From(() => FormDialog.FromForm(Oauth10Form.BuildForm, FormOptions.PromptInStart));
+                                Chain.From(() => FormDialog.FromForm(Oauth20Form.BuildForm, FormOptions.PromptInStart));
                         })
                 ).Unwrap()
                 .ContinueWith<object, object>(

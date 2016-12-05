@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Configuration;
 using System.Web.Http;
+using API;
 using Autofac;
 using Keboola.Bot.Dialogs;
 using Microsoft.Bot.Builder.Dialogs;
@@ -29,6 +31,7 @@ namespace Keboola.Bot
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
             builder.Update(Conversation.Container);
+            RootDialog.WitAI = new WitAI(WebConfigurationManager.AppSettings["WitAIToken"], WebConfigurationManager.AppSettings["WitAIAccept"]);
         }
 
         /// <summary>
@@ -40,6 +43,14 @@ namespace Keboola.Bot
             if (activity.Type == ActivityTypes.Message || activity.Type == ActivityTypes.ContactRelationUpdate ||
                 activity.Type == ActivityTypes.ConversationUpdate )
             {
+                //Default message
+                Activity isTyping = null;
+                var connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                isTyping = activity.CreateReply();
+                isTyping.Type = ActivityTypes.Typing;
+                await connector.Conversations.ReplyToActivityAsync(isTyping);
+
+
                 if (activity.From.Id != WebConfigurationManager.AppSettings["BotId"]) //Ignor initial message from direct line service
                 {
                     //Ignor facebook first message
@@ -74,6 +85,7 @@ namespace Keboola.Bot
                             }
                             catch (Exception ex)
                             {
+                                Debug.Fail(ex.Message);
                                 await Reset(activity, userData, stateClient);
                                 await Conversation.SendAsync(activity, new RootDialog().BuildChain);
                             }
@@ -81,7 +93,6 @@ namespace Keboola.Bot
                         {
                             //Default message
                             Activity reply = null;
-                            var connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                             reply = activity.CreateReply("Type \"reset\" if you want to restart conversation");
                             await connector.Conversations.ReplyToActivityAsync(reply);
                         }
@@ -98,6 +109,7 @@ namespace Keboola.Bot
 
         private async Task LogMessage(Activity activity)
         {
+            
             //Log incoming message
             var logger = new ConversationLogger(_db);
             var conversationLog = await logger.AddOrUpdateConversation(activity);

@@ -10,10 +10,24 @@ namespace Keboola.Bot.Dialogs.ConfigurationDialogs.PagingType
 {
     public enum PagingType
     {
+        [Terms("offset")]
+        [Describe("offset")]
         offset,
+
+        [Terms("responseparam", "response.param", "param")]
+        [Describe("response.param")]
         responseParam,
+
+        [Terms("response.url", "responseurl", "url")]
+        [Describe("response.url")]
         responseUrl,
+
+        [Terms("page.num", "pagenum", "num")]
+        [Describe("page.num")]
         pagenum,
+
+        [Terms("cur", "cursor")]
+        [Describe("cursor")]
         cursor
     }
 
