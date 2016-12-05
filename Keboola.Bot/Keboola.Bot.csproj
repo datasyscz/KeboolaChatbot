@@ -207,6 +207,8 @@
     <None Include="Properties\PublishProfiles\KeboolaBotTest - Web Deploy.pubxml">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Properties\PublishProfiles\KeboolaChatbot - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\KeboolaChatbot - Web Deploy.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

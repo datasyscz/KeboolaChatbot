@@ -10,6 +10,7 @@ namespace Keboola.Bot
         public enum CommandType
         {
             Reset,
+            Help,
             None
         }
 
@@ -18,6 +19,10 @@ namespace Keboola.Bot
             if (activity.Text == "//reset" || activity.Text == "reset" || activity.Text == "restart")
             {
                 return CommandType.Reset;
+            }
+            if (activity.Text?.ToLower() == "//help" || activity.Text?.ToLower() == "help")
+            {
+                return CommandType.Help;
             }
             return CommandType.None;
         }

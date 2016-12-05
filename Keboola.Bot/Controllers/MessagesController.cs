@@ -75,6 +75,12 @@ namespace Keboola.Bot
                             await Reset(activity, userData, stateClient);
                             finish = false;
                         }
+                        else if(command == CommandHandler.CommandType.Help)
+                        {
+                            var helpActivity = activity.CreateReply("Help");
+                            await connector.Conversations.ReplyToActivityAsync(helpActivity);
+                            return Request.CreateResponse(HttpStatusCode.OK);
+                        }
 
                         if (!finish) //Stop conversation if finish
                             try
