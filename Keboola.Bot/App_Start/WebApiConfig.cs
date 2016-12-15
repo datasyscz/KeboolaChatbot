@@ -8,6 +8,7 @@ namespace Keboola.Bot
     {
         public static void Register(HttpConfiguration config)
         {
+            config.Filters.Add(new AuthorizeAttribute());
             // Json settings
             config.Formatters.JsonFormatter.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             config.Formatters.JsonFormatter.SerializerSettings.ContractResolver =

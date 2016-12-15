@@ -1,4 +1,5 @@
 ﻿using System.Data.Entity;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Keboola.Shared;
@@ -38,7 +39,6 @@ namespace Keboola.Bot
                     FrameworkId = activity.Conversation.Id,
                     BaseUri = activity.ServiceUrl
                 };
-
                 //log botchannel
                 var botChannel =
                     await

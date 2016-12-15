@@ -61,11 +61,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Channel.cs" />
-    <Compile Include="Conversation.cs" />
-    <Compile Include="User.cs" />
-    <Compile Include="IntentAnswer.cs" />
-    <Compile Include="Message.cs" />
+    <Compile Include="Models\Channel.cs" />
+    <Compile Include="Models\Conversation.cs" />
+    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\IntentAnswer.cs" />
+    <Compile Include="Models\Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
