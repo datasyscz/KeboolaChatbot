@@ -1,5 +1,4 @@
 ﻿using System.Data.Entity;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Keboola.Shared;

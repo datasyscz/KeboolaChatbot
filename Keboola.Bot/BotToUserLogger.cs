@@ -66,7 +66,6 @@ namespace Keboola.Bot
         public override async Task PostAsync(IMessageActivity message,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            string intentAnswer;
             if (message.Text != string.Empty)
                 message.Text = await GetIntent(message.Text, cancellationToken);
             else if ((message.Attachments.Count > 0) && message.Attachments[0].Content is HeroCard)

@@ -1,0 +1,38 @@
+﻿<html>
+<head>
+    <script>
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId: "338746803166464",
+                xfbml: true,
+                version: "v2.6"
+            });
+            FB.Event.subscribe('send_to_messenger',
+                function(e) {
+                    if (e.event == "clicked")
+                        window.location.replace("https://www.messenger.com/t/911085282368477");
+                });
+        };
+
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+</head>
+<body>
+<div class="fb-send-to-messenger"
+     messenger_app_id="338746803166464"
+     page_id="911085282368477"
+     data-ref="FOO_UserID"
+     color="blue"
+     size="standard">
+</div>
+</body>
+</html>

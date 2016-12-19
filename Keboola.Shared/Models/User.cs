@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Keboola.Shared.Models;
 
 namespace Keboola.Shared
 {
@@ -14,6 +16,7 @@ namespace Keboola.Shared
 
         public virtual Channel UserChannel { get; set; }
         public virtual Channel BotChannel { get; set; }
+        public virtual KeboolaUser KeboolaUser { get; set; }
 
         /// <summary>
         ///     Bot framework id

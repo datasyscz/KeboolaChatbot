@@ -192,7 +192,7 @@ namespace Keboola.Bot.Dialogs
         {
             //TODO add ordinal text
             var ordinal = string.Empty;
-                // Properties.Settings.Default.Ordinals.Split(';')[(endpoint.SubEnpoints.Count)];
+            // Properties.Settings.Default.Ordinals.Split(';')[(endpoint.SubEnpoints.Count)];
             var sub = endpoint.RootEndpoint ? string.Empty : "sub";
             var parent = endpoint.RootEndpoint ? string.Empty : $"for \"{endpoint.parentName}\"";
             await context.PostAsync($"Add {ordinal}{sub}endpoint {parent}");

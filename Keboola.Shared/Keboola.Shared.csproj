@@ -63,6 +63,8 @@
   <ItemGroup>
     <Compile Include="Models\Channel.cs" />
     <Compile Include="Models\Conversation.cs" />
+    <Compile Include="Models\KeboolaToken.cs" />
+    <Compile Include="Models\KeboolaUser.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\IntentAnswer.cs" />
     <Compile Include="Models\Message.cs" />
