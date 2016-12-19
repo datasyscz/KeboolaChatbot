@@ -46,6 +46,14 @@
       <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -158,6 +166,10 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Quartz, Version=2.4.1.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Quartz.2.4.1\lib\net40\Quartz.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Remotion.Linq, Version=2.0.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
       <HintPath>..\packages\Remotion.Linq.2.0.0-beta-002\lib\net45\Remotion.Linq.dll</HintPath>
       <Private>True</Private>
@@ -174,11 +186,20 @@
     </Reference>
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -243,24 +264,13 @@
     <Compile Include="Controllers\StateController.cs" />
     <Compile Include="ConversationLogger.cs" />
     <Compile Include="DatabaseContext.cs" />
-    <Compile Include="Dialogs\ConfigurationDialogs\Auth\Basic.cs" />
-    <Compile Include="Dialogs\ConfigurationDialogs\Auth\Login.cs" />
-    <Compile Include="Dialogs\ConfigurationDialogs\Auth\Oauth10.cs" />
-    <Compile Include="Dialogs\ConfigurationDialogs\Auth\Oauth20.cs" />
-    <Compile Include="Dialogs\ConfigurationDialogs\Auth\Query.cs" />
-    <Compile Include="Dialogs\ConfigurationDialogs\PagingType\Cursor.cs" />
-    <Compile Include="Dialogs\ConfigurationDialogs\PagingType\Offset.cs" />
-    <Compile Include="Dialogs\ConfigurationDialogs\PagingType\PageNum.cs" />
-    <Compile Include="Dialogs\ConfigurationDialogs\PagingType\PagingTypeForm.cs" />
-    <Compile Include="Dialogs\ConfigurationDialogs\PagingType\ResponseParam.cs" />
-    <Compile Include="Dialogs\ConfigurationDialogs\PagingType\ResponseUrl.cs" />
-    <Compile Include="Dialogs\ConfigureDialog.cs" />
-    <Compile Include="Dialogs\EndpointDialog.cs" />
     <Compile Include="Dialogs\RootDialog.cs" />
     <Compile Include="Facebook\WebView.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Job\TokenSheduler.cs" />
+    <Compile Include="Keboola\Token.cs" />
     <Compile Include="Migrations\201611081323470_init.cs" />
     <Compile Include="Migrations\201611081323470_init.Designer.cs">
       <DependentUpon>201611081323470_init.cs</DependentUpon>
@@ -282,6 +292,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
+    <Compile Include="Service\DatabaseService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Validation.cs" />
     <Compile Include="Wit\WitAI.cs" />
@@ -290,6 +301,9 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <Compile Include="App_Start\StartUp.Auth.cs" />
+    <None Include="job_scheduling_data_2_0.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\PublishProfiles\KeboolaBotTest - Web Deploy.pubxml">
       <SubType>Designer</SubType>
     </None>
@@ -365,6 +379,11 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

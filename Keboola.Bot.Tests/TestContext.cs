@@ -84,7 +84,7 @@ namespace Tests
 
         public Task<int> SaveChangesAsync()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(0);
         }
     }
 
