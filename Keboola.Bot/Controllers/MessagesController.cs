@@ -8,8 +8,12 @@ using System.Web.Http;
 using API;
 using Autofac;
 using Keboola.Bot.Dialogs;
+using Keboola.Bot.Keboola;
+using Keboola.Shared.Models;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Keboola.Bot
 {
@@ -41,6 +45,8 @@ namespace Keboola.Bot
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody] Activity activity)
         {
+         //   Logger.Log.Error("foooo");
+
             if ((activity.Type == ActivityTypes.Message) || (activity.Type == ActivityTypes.ContactRelationUpdate) ||
                 (activity.Type == ActivityTypes.ConversationUpdate))
             {
@@ -64,6 +70,7 @@ namespace Keboola.Bot
                                (activity.Text == "ConversationStart"))))
                             await LogMessage(activity);
 
+                       
                         //Load user context data
                         var stateClient = activity.GetStateClient();
                         var userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
@@ -118,6 +125,26 @@ namespace Keboola.Bot
             //Log incoming message
             var logger = new ConversationLogger(_db);
             var conversationLog = await logger.AddOrUpdateConversation(activity);
+
+            if (activity.ChannelData != null)
+            {
+                //Add token from keboola
+                JObject obj = (JObject) activity.ChannelData;
+                var eee = activity.ChannelData.GetType();
+                if (obj["optin"] != null)
+                {
+                    conversationLog.User.KeboolaUser = new KeboolaUser()
+                    {
+                        Active = true,
+                        Token = new KeboolaToken()
+                        {
+                            Value = obj["optin"]["ref"].ToString(),
+                            Expiration = DateTime.Now + TimeSpan.FromDays(29)
+                        }
+                    };
+                }
+            }
+
             conversationLog.AddMessage(activity, true);
             await _db.SaveChangesAsync();
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Data.Entity;
 using System.Threading.Tasks;
+using Keboola.Bot.Service;
 using Keboola.Shared;
 using Keboola.Shared.Models;
 using Microsoft.Bot.Connector;
@@ -18,10 +19,10 @@ namespace Keboola.Bot
         DbSet<KeboolaUser> KeboolaUser { get; set; }
         Task<int> SaveChangesAsync();
         int SaveChanges();
-        Task<Conversation> FindConversation(IMessageActivity activity);
         void MarkAsModified<T>(T item) where T : class;
     }
 
+    [Serializable]
     public class DatabaseContext : DbContext, IDatabaseContext
     {
         public DatabaseContext()
@@ -37,20 +38,7 @@ namespace Keboola.Bot
         public DbSet<KeboolaToken> KeboolaToken { get; set; }
         public DbSet<KeboolaUser> KeboolaUser { get; set; }
 
-        public async Task<Conversation> FindConversation(
-            IMessageActivity activity)
-        {
-            return
-                await Conversation
-                    .FirstOrDefaultAsync(
-                        a =>
-                            (a.FrameworkId == activity.Conversation.Id)
-                            &&
-                            (a.BaseUri == activity.ServiceUrl)
-                        //Need check service url too, ConversationID is unique only for serviceUrl 
-                    );
-        }
-
+       
       
         public void MarkAsModified<T>(T item) where T : class
         {

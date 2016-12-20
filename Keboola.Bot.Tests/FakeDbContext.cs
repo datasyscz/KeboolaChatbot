@@ -4,18 +4,8 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Threading.Tasks;
 using Keboola.Bot;
 using Keboola.Bot.Service;
-using Microsoft.Bot.Builder.Dialogs;
 using Moq;
 using Tests;
 
@@ -43,11 +33,6 @@ namespace Keboola.Shared.Models
             List<KeboolaToken> tokens = new List<KeboolaToken>();
             mockContext.Setup(c => c.KeboolaUser).Returns(MockDbSet<KeboolaUser>(users).Object);
             mockContext.Setup(c => c.KeboolaToken).Returns(MockDbSet<KeboolaToken>(tokens).Object);
-       //     mockContext.Setup(c => c.SaveChangesAsync()).Returns(() => Task.Run(() => { return 1; })).Verifiable();
-       //     mockContext.Setup(c => c.SaveChanges()).Verifiable();
-            //mockContext.Setup(c => c.Channel).Returns(MockDbSet<Channel>().Object);
-            // mockContext.Setup(c => c.Conversation).Returns(MockDbSet<Conversation>().Object);
-
             var service = new DatabaseService(mockContext.Object);
             return service;
         }

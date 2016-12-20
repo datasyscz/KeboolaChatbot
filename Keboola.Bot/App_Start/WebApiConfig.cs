@@ -1,6 +1,9 @@
 ﻿using System.Web.Http;
+using Keboola.Bot.Job;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Quartz;
+using Quartz.Impl;
 
 namespace Keboola.Bot
 {
@@ -21,8 +24,6 @@ namespace Keboola.Bot
                 NullValueHandling = NullValueHandling.Ignore
             };
 
-            // Web API configuration and services
-
             // Web API routes
             config.MapHttpAttributeRoutes();
 
@@ -31,6 +32,29 @@ namespace Keboola.Bot
                 "api/{controller}/{id}",
                 new {id = RouteParameter.Optional}
             );
+
+
+            //refresh tokens from keboola
+            IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
+            scheduler.Start();
+
+            IJobDetail job = JobBuilder.Create<TokenShedulerJob>().Build();
+
+            ITrigger trigger = TriggerBuilder.Create()
+                .WithDailyTimeIntervalSchedule
+                (s =>
+                    s.WithIntervalInMinutes(20)
+                        .OnEveryDay()
+                        .StartingDailyAt(TimeOfDay.HourAndMinuteOfDay(0, 0))
+                )
+                .Build();
+
+            scheduler.ScheduleJob(job, trigger);
+
+
+            //Run on start
+            TokenShedulerJob sheduler = new TokenShedulerJob();
+            sheduler.Execute(null);
         }
     }
 }

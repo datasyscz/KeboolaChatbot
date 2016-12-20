@@ -3,13 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System;
+using System.Diagnostics;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Keboola.Bot.Service;
+using Newtonsoft.Json;
 
 namespace Keboola.Bot.Keboola
 {
+    public interface IKeboolaClient
+    {
+        Task<string> RefreshTokenAsync(string token);
+    }
+
     [Serializable]
-    public class KeboolaClient
+    public class KeboolaClient : IKeboolaClient
     {
         private string baseUrl;
 
@@ -29,7 +38,16 @@ namespace Keboola.Bot.Keboola
                     using (var response = await httpClient.PostAsync("v2/storage/tokens/id_token/refresh", content))
                     {
                         string responseData = await response.Content.ReadAsStringAsync();
-                        return responseData;
+                        try
+                        {
+                            var obj = JsonConvert.DeserializeObject<Responses.RefreshTokenResponse>(responseData);
+                            return obj.token;
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.Fail(ex.Message);
+                        }
+                        return null;
                     }
                 }
             }

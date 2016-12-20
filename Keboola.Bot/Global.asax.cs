@@ -1,9 +1,11 @@
-﻿using System.Web;
+﻿using System.IO;
+using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+
 
 namespace Keboola.Bot
 {
@@ -13,6 +15,7 @@ namespace Keboola.Bot
         {
         //    AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
+         //   XmlConfigurator.Configure(new FileInfo(Server.MapPath("~/Web.config")));
             //FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             //RouteConfig.RegisterRoutes(RouteTable.Routes);
             ////   BundleConfig.RegisterBundles(BundleTable.Bundles);

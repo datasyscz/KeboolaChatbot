@@ -1,8 +1,11 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Threading;
 using System.Threading.Tasks;
+using Keboola.Bot.Service;
 using Keboola.Shared;
 using Microsoft.Bot.Connector;
+using Newtonsoft.Json;
 
 namespace Keboola.Bot
 {
@@ -13,10 +16,12 @@ namespace Keboola.Bot
     public class ConversationLogger
     {
         private readonly IDatabaseContext _db;
+        private DatabaseService service;
 
         public ConversationLogger(IDatabaseContext db)
         {
             _db = db;
+            service  =new DatabaseService(_db);
         }
 
         /// <summary>
@@ -28,7 +33,7 @@ namespace Keboola.Bot
         public async Task<Conversation> AddOrUpdateConversation(IMessageActivity activity)
         {
             //Find conversation
-            var conversation = await _db.FindConversation(activity);
+            var conversation = await service.FindConversationAsync(activity);
             if (conversation == null)
             {
                 conversation = new Conversation
@@ -52,6 +57,18 @@ namespace Keboola.Bot
                 else
                     conversation.User.BotChannel = botChannel;
 
+            
+            //    var SendToMessageToUsModel = JsonConvert.DeserializeObject<Facebook.SendMessageToUsModel>(activity.ChannelData.);
+
+            Type tt  =
+                activity.ChannelData.GetType();
+                //if (activity.ChannelData.GetType() == typeof())
+             //   {
+                    
+              //  }
+ 
+
+
                 //log userChannel
                 var userChannel =
                     await
@@ -74,7 +91,7 @@ namespace Keboola.Bot
 
         public async Task LogOutgoingMessage(IMessageActivity message, CancellationToken cancellationToken)
         {
-            var conversation = await _db.FindConversation(message);
+            var conversation = await service.FindConversationAsync(message);
 
             if (conversation != null)
             {

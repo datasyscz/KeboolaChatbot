@@ -138,8 +138,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="FakeConfig.cs" />
-    <Compile Include="FakeDbSet.cs" />
+    <Compile Include="Keboola\KeboolaClientTests.cs" />
     <Compile Include="RootDialogtest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FakeDbContext.cs" />
