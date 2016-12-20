@@ -8,11 +8,9 @@ using System.Web.Http;
 using API;
 using Autofac;
 using Keboola.Bot.Dialogs;
-using Keboola.Bot.Keboola;
+using Keboola.Shared;
 using Keboola.Shared.Models;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Keboola.Bot
@@ -34,7 +32,7 @@ namespace Keboola.Bot
             builder.Register(c => new BotToUserDbTranslate(c.Resolve<BotToUserLogger>(), _db))
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
-            builder.Update(Conversation.Container);
+            builder.Update(Microsoft.Bot.Builder.Dialogs.Conversation.Container);
             RootDialog.WitAI = new WitAI(WebConfigurationManager.AppSettings["WitAIToken"],
                 WebConfigurationManager.AppSettings["WitAIAccept"]);
         }
@@ -45,7 +43,7 @@ namespace Keboola.Bot
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody] Activity activity)
         {
-         //   Logger.Log.Error("foooo");
+            //   Logger.Log.Error("foooo");
 
             if ((activity.Type == ActivityTypes.Message) || (activity.Type == ActivityTypes.ContactRelationUpdate) ||
                 (activity.Type == ActivityTypes.ConversationUpdate))
@@ -63,25 +61,24 @@ namespace Keboola.Bot
                     if ((activity.ChannelId.ToLower() != "facebook") ||
                         (activity.Type != ActivityTypes.ConversationUpdate))
                     {
+                        Conversation conversation = null;
                         //Dont log welcome message
                         if (
                             !((activity.ChannelId.ToLower() == "directline") &&
                               ((activity.Type == ActivityTypes.ConversationUpdate) ||
                                (activity.Text == "ConversationStart"))))
-                            await LogMessage(activity);
+                            conversation = await LogMessage(activity);
 
-                       
+
                         //Load user context data
                         var stateClient = activity.GetStateClient();
                         var userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
-                        var finish = userData?.GetProperty<bool>("Finish") ?? false;
 
                         //handle predefined commands
                         var command = CommandHandler.Handle(activity);
                         if ((command == CommandHandler.CommandType.Reset) || (activity.Action?.ToLower() == "remove"))
                         {
                             await Reset(activity, userData, stateClient);
-                            finish = false;
                         }
                         else if (command == CommandHandler.CommandType.Help)
                         {
@@ -90,25 +87,28 @@ namespace Keboola.Bot
                             return Request.CreateResponse(HttpStatusCode.OK);
                         }
 
-                        if (!finish) //Stop conversation if finish
+                        if ((conversation != null) && conversation.User.IsActivated()) //Stop conversation if finish
                             try
                             {
-                                //Dialog
-                                //   await Conversation.SendAsync(activity, ConfigureDialog.RootConversation);
-                                await Conversation.SendAsync(activity, new RootDialog().BuildChain);
+                                await
+                                    Microsoft.Bot.Builder.Dialogs.Conversation.SendAsync(activity,
+                                        new RootDialog().BuildChain);
                             }
                             catch (Exception ex)
                             {
                                 Debug.Fail(ex.Message);
                                 await Reset(activity, userData, stateClient);
-                                await Conversation.SendAsync(activity, new RootDialog().BuildChain);
+                                await
+                                    Microsoft.Bot.Builder.Dialogs.Conversation.SendAsync(activity,
+                                        new RootDialog().BuildChain);
                             }
                         else
                         {
                             //Default message
                             Activity reply = null;
-                            reply = activity.CreateReply("Type \"reset\" if you want to restart conversation");
+                            reply = activity.CreateReply("$Hello inactive");
                             await connector.Conversations.ReplyToActivityAsync(reply);
+                            //TODO add yes/no button with redirect
                         }
                     }
             }
@@ -120,7 +120,7 @@ namespace Keboola.Bot
             return response;
         }
 
-        private async Task LogMessage(Activity activity)
+        private async Task<Conversation> LogMessage(Activity activity)
         {
             //Log incoming message
             var logger = new ConversationLogger(_db);
@@ -129,24 +129,23 @@ namespace Keboola.Bot
             if (activity.ChannelData != null)
             {
                 //Add token from keboola
-                JObject obj = (JObject) activity.ChannelData;
+                var obj = (JObject) activity.ChannelData;
                 var eee = activity.ChannelData.GetType();
                 if (obj["optin"] != null)
-                {
-                    conversationLog.User.KeboolaUser = new KeboolaUser()
+                    conversationLog.User.KeboolaUser = new KeboolaUser
                     {
                         Active = true,
-                        Token = new KeboolaToken()
+                        Token = new KeboolaToken
                         {
                             Value = obj["optin"]["ref"].ToString(),
                             Expiration = DateTime.Now + TimeSpan.FromDays(29)
                         }
                     };
-                }
             }
 
             conversationLog.AddMessage(activity, true);
             await _db.SaveChangesAsync();
+            return conversationLog;
         }
 
         private static async Task Reset(Activity activity, BotData userData, StateClient stateClient)
@@ -154,7 +153,7 @@ namespace Keboola.Bot
             userData?.SetProperty("Finish", false);
             activity.Text = "/deleteprofile";
             await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-            await Conversation.SendAsync(activity, new RootDialog().BuildChain);
+            await Microsoft.Bot.Builder.Dialogs.Conversation.SendAsync(activity, new RootDialog().BuildChain);
             activity.Text = "";
         }
 

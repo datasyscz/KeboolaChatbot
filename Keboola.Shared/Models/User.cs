@@ -26,5 +26,10 @@ namespace Keboola.Shared
         public string BaseUri { get; set; }
 
         public string Name { get; set; }
+
+        public bool IsActivated()
+        {
+            return KeboolaUser?.Active == true;
+        }
     }
 }
