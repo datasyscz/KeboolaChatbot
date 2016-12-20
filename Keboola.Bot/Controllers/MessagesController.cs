@@ -8,6 +8,7 @@ using System.Web.Http;
 using API;
 using Autofac;
 using Keboola.Bot.Dialogs;
+using Keboola.Bot.Service;
 using Keboola.Shared;
 using Keboola.Shared.Models;
 using Microsoft.Bot.Connector;
@@ -19,12 +20,14 @@ namespace Keboola.Bot
     public class MessagesController : ApiController
     {
         private readonly IDatabaseContext _db;
+        private DatabaseService service;
 
         public MessagesController()
         {
             //Register own IBotToUser for messages loging
 
             _db = new DatabaseContext();
+            service = new DatabaseService(_db);
             var builder = new ContainerBuilder();
             builder.RegisterType<BotToUserLogger>()
                 .AsSelf()
@@ -82,7 +85,7 @@ namespace Keboola.Bot
                         }
                         else if (command == CommandHandler.CommandType.Help)
                         {
-                            var helpActivity = activity.CreateReply("Help");
+                            var helpActivity = activity.CreateReply(await service.GetIntentAsync("Help"));
                             await connector.Conversations.ReplyToActivityAsync(helpActivity);
                             return Request.CreateResponse(HttpStatusCode.OK);
                         }
@@ -96,18 +99,19 @@ namespace Keboola.Bot
                             }
                             catch (Exception ex)
                             {
-                                Debug.Fail(ex.Message);
                                 await Reset(activity, userData, stateClient);
                                 await
                                     Microsoft.Bot.Builder.Dialogs.Conversation.SendAsync(activity,
                                         new RootDialog().BuildChain);
+                                Debug.Fail(ex.Message);
                             }
                         else
                         {
                             //Default message
                             Activity reply = null;
-                            reply = activity.CreateReply("$Hello inactive");
+                            reply = activity.CreateReply(await service.GetIntentAsync("Hello inactive"));
                             await connector.Conversations.ReplyToActivityAsync(reply);
+
                             //TODO add yes/no button with redirect
                         }
                     }
@@ -155,6 +159,7 @@ namespace Keboola.Bot
             await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
             await Microsoft.Bot.Builder.Dialogs.Conversation.SendAsync(activity, new RootDialog().BuildChain);
             activity.Text = "";
+
         }
 
         private Activity HandleSystemMessage(Activity message)

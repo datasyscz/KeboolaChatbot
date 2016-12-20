@@ -21,10 +21,7 @@ namespace Keboola.Shared
         public string BaseUri { get; set; }
         public virtual User User { get; set; }
 
-        bool IsActivated()
-        {
-            
-        }
+      
 
         public void AddMessage(IMessageActivity activity, bool messageFromUser)
         {

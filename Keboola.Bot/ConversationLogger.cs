@@ -57,18 +57,6 @@ namespace Keboola.Bot
                 else
                     conversation.User.BotChannel = botChannel;
 
-            
-            //    var SendToMessageToUsModel = JsonConvert.DeserializeObject<Facebook.SendMessageToUsModel>(activity.ChannelData.);
-
-            Type tt  =
-                activity.ChannelData.GetType();
-                //if (activity.ChannelData.GetType() == typeof())
-             //   {
-                    
-              //  }
- 
-
-
                 //log userChannel
                 var userChannel =
                     await
