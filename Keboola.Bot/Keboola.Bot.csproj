@@ -269,6 +269,7 @@
     <Compile Include="ConversationLogger.cs" />
     <Compile Include="DatabaseContext.cs" />
     <Compile Include="Dialogs\IntroDialog.cs" />
+    <Compile Include="Dialogs\RedirectHeroCard.cs" />
     <Compile Include="Dialogs\RootDialog.cs" />
     <Compile Include="Facebook\SendMessageToUsModel.cs" />
     <Compile Include="Facebook\WebView.cs" />

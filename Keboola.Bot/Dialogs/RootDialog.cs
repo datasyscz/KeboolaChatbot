@@ -15,14 +15,16 @@ namespace Keboola.Bot.Dialogs
     {
         public static WitAI WitAI;
         public static KeboolaClient KeboolaClient;
-        IDatabaseContext _dbContext = new DatabaseContext();
+        private static IDatabaseContext _dbContext;
+
+        public RootDialog(IDatabaseContext db)
+        {
+            _dbContext = db;
+        }
 
         public IDialog<object> BuildChain()
         {
             return new IntroDialog(_dbContext)
-                .WaitToBot()
-                .WaitToBot()
-                .WaitToBot()
                 .WaitToBot();
 
             /*  return Chain.Return("$Hello")

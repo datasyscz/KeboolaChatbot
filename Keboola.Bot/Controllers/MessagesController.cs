@@ -95,24 +95,23 @@ namespace Keboola.Bot
                             {
                                 await
                                     Microsoft.Bot.Builder.Dialogs.Conversation.SendAsync(activity,
-                                        new RootDialog().BuildChain);
+                                        new RootDialog(_db).BuildChain);
                             }
                             catch (Exception ex)
                             {
                                 await Reset(activity, userData, stateClient);
                                 await
                                     Microsoft.Bot.Builder.Dialogs.Conversation.SendAsync(activity,
-                                        new RootDialog().BuildChain);
+                                        new RootDialog(_db).BuildChain);
                                 Debug.Fail(ex.Message);
                             }
                         else
                         {
                             //Default message
-                            Activity reply = null;
-                            reply = activity.CreateReply(await service.GetIntentAsync("Hello inactive"));
-                            await connector.Conversations.ReplyToActivityAsync(reply);
-
-                            //TODO add yes/no button with redirect
+                            var yesNoButton = HeroCards.YesNoMessageWithLink(activity,
+                                await service.GetIntentAsync("Hello inactive"),
+                                "https://connection.keboola.com/admin/account/chatbot");
+                            await connector.Conversations.ReplyToActivityAsync((Activity)yesNoButton);
                         }
                     }
             }
@@ -152,12 +151,12 @@ namespace Keboola.Bot
             return conversationLog;
         }
 
-        private static async Task Reset(Activity activity, BotData userData, StateClient stateClient)
+        private async Task Reset(Activity activity, BotData userData, StateClient stateClient)
         {
             userData?.SetProperty("Finish", false);
             activity.Text = "/deleteprofile";
             await stateClient.BotState.SetUserDataAsync(activity.ChannelId, activity.From.Id, userData);
-            await Microsoft.Bot.Builder.Dialogs.Conversation.SendAsync(activity, new RootDialog().BuildChain);
+            await Microsoft.Bot.Builder.Dialogs.Conversation.SendAsync(activity, new RootDialog(_db).BuildChain);
             activity.Text = "";
 
         }
