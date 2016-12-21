@@ -22,7 +22,7 @@ namespace Keboola.Bot.Keboola
     {
         private string baseUrl;
 
-        public KeboolaClient(string baseUrl = "https://private-anon-805f109e37-keboola.apiary-mock.com/")
+        public KeboolaClient(string baseUrl)
         {
             this.baseUrl = baseUrl;
         }

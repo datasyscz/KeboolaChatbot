@@ -290,6 +290,10 @@
     <Compile Include="Migrations\201612190848038_addKeboolauserFix.Designer.cs">
       <DependentUpon>201612190848038_addKeboolauserFix.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201612211131491_requaredtoken.cs" />
+    <Compile Include="Migrations\201612211131491_requaredtoken.Designer.cs">
+      <DependentUpon>201612211131491_requaredtoken.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -342,6 +346,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201612190848038_addKeboolauserFix.resx">
       <DependentUpon>201612190848038_addKeboolauserFix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612211131491_requaredtoken.resx">
+      <DependentUpon>201612211131491_requaredtoken.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

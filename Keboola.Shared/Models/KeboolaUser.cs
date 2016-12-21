@@ -13,6 +13,8 @@ namespace Keboola.Shared.Models
     {
         [Key]
         public int Id { get; set; }
+
+        [Required]
         public virtual KeboolaToken Token { get; set; }
         public virtual List<KeboolaToken> InactiveTokens { get; set; }
         

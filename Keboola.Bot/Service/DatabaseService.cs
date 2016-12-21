@@ -10,6 +10,7 @@ using Keboola.Bot.Controllers;
 using Keboola.Shared;
 using Keboola.Shared.Models;
 using Microsoft.Bot.Connector;
+using Newtonsoft.Json.Linq;
 
 namespace Keboola.Bot.Service
 {
@@ -17,6 +18,7 @@ namespace Keboola.Bot.Service
     public class DatabaseService
     {
         private static IDatabaseContext _context;
+        public static TimeSpan TokenExpiration;
 
         public DatabaseService(IDatabaseContext context)
         {
@@ -25,7 +27,7 @@ namespace Keboola.Bot.Service
 
         public async Task<bool> TokenExistAsync(string token)
         {
-            return await _context.KeboolaUser.AnyAsync(a => a.Token.Value == token);
+            return await _context.KeboolaToken.AnyAsync(a => a.Value == token);
         }
 
         public async Task<bool> UserIsAtivated(string token)
@@ -48,12 +50,12 @@ namespace Keboola.Bot.Service
         }
 
 
-        public async Task AddUserAndToken(StateModel state, int expirationDays)
+        public async Task AddUserAndToken(StateModel state)
         {
             KeboolaToken newToken = new KeboolaToken()
             {
                 Value = state.Token,
-                Expiration = DateTime.Now + TimeSpan.FromDays(expirationDays - 1)
+                Expiration = DateTime.Now + TokenExpiration
             };
 
             //newToken = _context.KeboolaToken.Attach(newToken);
@@ -85,6 +87,25 @@ namespace Keboola.Bot.Service
             if (intent != null)
                 return intent.Answer;
             return id;
+        }
+
+        public async Task<bool> UpdateToken(KeboolaUser user, string token)
+        {
+            if (user.Token.Value != token)
+            {
+                if (!(await TokenExistAsync(token)))
+                {
+                    var oldToke = user.Token;
+                    user.InactiveTokens.Add(oldToke);
+                    user.Token = new KeboolaToken()
+                    {
+                        Expiration = DateTime.Now + TokenExpiration,
+                        Value = token
+                    };
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

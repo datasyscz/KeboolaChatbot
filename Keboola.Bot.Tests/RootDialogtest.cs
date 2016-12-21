@@ -52,31 +52,7 @@ namespace Keboola.Bot.Tests
             return msg.Text.ToLower().Contains(text.ToLower());
         }
 
-
-        [TestMethod]
-        public async Task RootDialogAccesDocumentClient()
-        {
-            InitDialog(out MakeRoot, out container);
-
-            Assert.IsTrue(await FromBot("Hello"));
-            Assert.IsTrue(await FromBot("Your name"));
-            await FromUser("David");
-            Assert.IsTrue(await FromBot("Have access API?"));
-
-            await FromUser("yes");
-            Assert.IsTrue(await FromBot("Try to call endpoint"));
-            Assert.IsTrue(await FromBot("Do you have doc?"));
-
-            await FromUser("yes");
-            Assert.IsTrue(await FromBot("Need some information"));
-            Assert.IsTrue(await FromBot("Do you have REST Client?"));
-
-            await FromUser("yes");
-            Assert.IsTrue(await FromBot("Did you try to get some data via REST Client?"));
-            await FromUser("yes");
-        }
-
-     
+     /*
         private void InitDialog(out Func<IDialog<object>> MakeRoot, out IContainer container)
         {
             var echoDialog = new RootDialog().BuildChain();
@@ -88,6 +64,7 @@ namespace Keboola.Bot.Tests
             container = Build(Options.MockConnectorFactory | Options.ScopedQueue, echoDialog);
 
         }
+        */
 
         private async Task<Queue<IMessageActivity>> GetResponse(IContainer container, Func<IDialog<object>> makeRoot,
             IMessageActivity toBot)

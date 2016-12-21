@@ -31,18 +31,20 @@ namespace Keboola.Bot.Controllers
     {
         private IDatabaseContext db = new DatabaseContext();
         private DatabaseService service;
-        private int tokenExpirationDays = int.Parse(WebConfigurationManager.AppSettings["KeboolaTokenExpirationDays"]);
+
+        private TimeSpan tokenExpirationDays =
+            new TimeSpan(int.Parse(WebConfigurationManager.AppSettings["KeboolaTokenExpirationDays"]), 0, 0, 0);
 
         public StateController()
         {
             service = new DatabaseService(db);
         }
 
-        public StateController(IDatabaseContext db, int tokenExpirationDays = 30) 
+        public StateController(IDatabaseContext db, int tokenExpirationDays = 30)
         {
             this.db = db;
             service = new DatabaseService(db);
-            this.tokenExpirationDays = tokenExpirationDays;
+            this.tokenExpirationDays = new TimeSpan(tokenExpirationDays,0,0,0);
         }
 
         // POST api/state
@@ -57,9 +59,9 @@ namespace Keboola.Bot.Controllers
                 //If token exist
                 if (await service.TokenExistAsync(state.Token))
                     return StatusCode(HttpStatusCode.Conflict);
-                
+
                 //Add user
-                await service.AddUserAndToken(state, tokenExpirationDays);
+                await service.AddUserAndToken(state);
                 return StatusCode(HttpStatusCode.OK);
             }
             catch (DbEntityValidationException)
@@ -79,8 +81,9 @@ namespace Keboola.Bot.Controllers
                 return BadRequest();
             try
             {
+
                 //Find exist record
-                var keboolaUser = await service.GetKeboolaUserByTokenAsync(token); 
+                var keboolaUser = await service.GetKeboolaUserByTokenAsync(token);
 
                 //Ignor expired tokens or non-exist
                 if (keboolaUser == null || DateTime.Now > keboolaUser.Token.Expiration)

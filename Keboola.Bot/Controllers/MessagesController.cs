@@ -38,6 +38,7 @@ namespace Keboola.Bot
             builder.Update(Microsoft.Bot.Builder.Dialogs.Conversation.Container);
             RootDialog.WitAI = new WitAI(WebConfigurationManager.AppSettings["WitAIToken"],
                 WebConfigurationManager.AppSettings["WitAIAccept"]);
+            DatabaseService.TokenExpiration = new TimeSpan(int.Parse(WebConfigurationManager.AppSettings["TokenExpirationDays"]));
         }
 
         /// <summary>
@@ -134,16 +135,27 @@ namespace Keboola.Bot
                 //Add token from keboola
                 var obj = (JObject) activity.ChannelData;
                 var eee = activity.ChannelData.GetType();
+                var ssd = obj["optin"];
                 if (obj["optin"] != null)
-                    conversationLog.User.KeboolaUser = new KeboolaUser
+                {
+                    if (conversationLog.User == null)
                     {
-                        Active = true,
-                        Token = new KeboolaToken
+                        conversationLog.User.KeboolaUser = new KeboolaUser
                         {
-                            Value = obj["optin"]["ref"].ToString(),
-                            Expiration = DateTime.Now + TimeSpan.FromDays(29)
-                        }
-                    };
+                            Active = true,
+                            Token = new KeboolaToken
+                            {
+                                Value = obj["optin"]["ref"].ToString(),
+                                Expiration = DateTime.Now + TimeSpan.FromDays(29)
+                            }
+                        };
+                    }
+                    else
+                    {
+                        bool updated = await service.UpdateToken(conversationLog.User.KeboolaUser,
+                            obj["optin"]["ref"].ToString());
+                    }
+                }
             }
 
             conversationLog.AddMessage(activity, true);

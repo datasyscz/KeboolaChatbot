@@ -36,7 +36,7 @@ namespace Keboola.Bot
 
             //refresh tokens from keboola
             IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
-            scheduler.Start();
+          //  scheduler.Start();
 
             IJobDetail job = JobBuilder.Create<TokenShedulerJob>().Build();
 
