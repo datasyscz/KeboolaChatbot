@@ -14,6 +14,8 @@ using Keboola.Shared.Models;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Telerik.JustMock.EntityFramework;
+using Keboola.Bot.Service;
 
 namespace Tests
 {
@@ -49,18 +51,18 @@ namespace Tests
         public async Task TestPostConflictState()
         {
             StateModel model = GenerateRandomModel();
-          
-            var dbContext = new Mock<IDatabaseContext>();
-            var service = FakeDbContext.GetService(dbContext);
-            var controller = new StateController(dbContext.Object);
+
+            var dbContext = EntityFrameworkMock.Create<DatabaseContext>();
+            var service = new DatabaseService(dbContext);
+            var controller = new StateController(dbContext);
 
             await controller.Post(model);
             for (int i = 0; i < 100; i++)
-                await controller.Post(model);
+                await controller.Post(GenerateRandomModel());
 
             var result = await controller.Post(model) as StatusCodeResult;
             Assert.AreEqual(HttpStatusCode.Conflict, result.StatusCode);
-            var savedUse = dbContext.Object.KeboolaUser.Count(a => a.Token.Value == model.Token);
+            var savedUse = dbContext.KeboolaUser.Count(a => a.Token.Value == model.Token);
             Assert.AreEqual(savedUse, 1);
         }
 
@@ -69,18 +71,23 @@ namespace Tests
         {
             StateModel model = GenerateRandomModel();
             model.Active = true;
-            var dbContext = new Mock<IDatabaseContext>();
-            var service = FakeDbContext.GetService(dbContext);
-            var controller = new StateController(dbContext.Object);
+            //  var dbContext = new Mock<IDatabaseContext>();
+            var dbContext = EntityFrameworkMock.Create<DatabaseContext>();
+            //    var service = FakeDbContext.GetService(dbContext);
+            var service = new DatabaseService(dbContext);
+            var controller = new StateController(dbContext);
+
+
+
             await controller.Post(model);
-            var changedUser = dbContext.Object.KeboolaUser.FirstOrDefault(a => a.Token.Value == model.Token);
+            var changedUser = dbContext.KeboolaUser.FirstOrDefault(a => a.Token.Value == model.Token);
             Assert.IsTrue(changedUser.Active);
             string token = model.Token;
             model.Token = null;
             model.Active = false;
             var result2 = await controller.Put(token, model) as StatusCodeResult;
             Assert.AreEqual(HttpStatusCode.OK, result2.StatusCode);
-            changedUser = dbContext.Object.KeboolaUser.FirstOrDefault(a => a.Token.Value == token);
+            changedUser = dbContext.KeboolaUser.FirstOrDefault(a => a.Token.Value == token);
             Assert.IsFalse(changedUser.Active);
         }
 
@@ -136,9 +143,9 @@ namespace Tests
                 Token = "sa54d6+5ADs4d65"
             };
 
-            var dbContext = new Mock<IDatabaseContext>();
-            var service = FakeDbContext.GetService(dbContext);
-            var realContext = dbContext.Object;
+            var dbContext = EntityFrameworkMock.Create<DatabaseContext>();
+            var service = new DatabaseService(dbContext);
+            var realContext = dbContext;
             var controller = new StateController(realContext);
           
             await controller.Post(model);

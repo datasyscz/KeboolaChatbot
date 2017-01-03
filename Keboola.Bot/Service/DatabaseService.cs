@@ -18,7 +18,7 @@ namespace Keboola.Bot.Service
     public class DatabaseService
     {
         private static IDatabaseContext _context;
-        public static TimeSpan TokenExpiration;
+        public static TimeSpan TokenExpiration = new TimeSpan(30,0,0);
 
         public DatabaseService(IDatabaseContext context)
         {
@@ -27,7 +27,7 @@ namespace Keboola.Bot.Service
 
         public async Task<bool> TokenExistAsync(string token)
         {
-            return await _context.KeboolaToken.AnyAsync(a => a.Value == token);
+            return await _context.KeboolaUser.AnyAsync(a => a.Token.Value == token);
         }
 
         public async Task<bool> UserIsAtivated(string token)

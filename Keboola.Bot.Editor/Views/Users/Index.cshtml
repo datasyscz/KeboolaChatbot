@@ -1,0 +1,33 @@
+﻿@model IEnumerable<Keboola.Shared.User>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<table class="table">
+    <tr>
+        <th>
+           Username
+        </th>
+        <th>
+           Active
+        </th>
+      
+     
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.UserChannel.FriendlyName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem =>  item.IsActivatedStr);
+        </td>
+    </tr>
+}
+
+</table>

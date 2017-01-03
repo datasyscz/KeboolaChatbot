@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web.Configuration;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Mvc;
 using Keboola.Bot.Service;
 using Keboola.Shared.Models;
 
@@ -25,18 +26,17 @@ namespace Keboola.Bot.Controllers
     /// <summary>
     /// State controller manage acces from keboola backend to chatbota backend.
     /// </summary>
-    [Authorize]
-    [RoutePrefix("api/State")]
+    [System.Web.Http.Authorize]
+    [System.Web.Http.RoutePrefix("api/State")]
     public class StateController : ApiController
     {
         private IDatabaseContext db = new DatabaseContext();
         private DatabaseService service;
 
-        private TimeSpan tokenExpirationDays =
-            new TimeSpan(int.Parse(WebConfigurationManager.AppSettings["KeboolaTokenExpirationDays"]), 0, 0, 0);
-
         public StateController()
         {
+            TimeSpan tokenExpirationDays = new TimeSpan(int.Parse(WebConfigurationManager.AppSettings["TokenExpirationDays"]), 0, 0, 0);
+            DatabaseService.TokenExpiration = tokenExpirationDays;
             service = new DatabaseService(db);
         }
 
@@ -44,7 +44,8 @@ namespace Keboola.Bot.Controllers
         {
             this.db = db;
             service = new DatabaseService(db);
-            this.tokenExpirationDays = new TimeSpan(tokenExpirationDays,0,0,0);
+            DatabaseService.TokenExpiration = new TimeSpan(tokenExpirationDays, 0, 0, 0); ;
+
         }
 
         // POST api/state
@@ -71,9 +72,10 @@ namespace Keboola.Bot.Controllers
         }
 
         //PUT api/state/654dfs6sd54f
-        [ResponseType(typeof(void))]
+        [System.Web.Http.Authorize]
         public async Task<IHttpActionResult> Put(string token, [FromBody] StateModel state)
         {
+           
             //Validate input
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

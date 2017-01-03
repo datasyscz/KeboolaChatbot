@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Keboola.Bot.Job;
 using Keboola.Shared.Models;
 using Moq;
+using Telerik.JustMock.EntityFramework;
+using Keboola.Bot.Service;
 
 namespace Keboola.Bot.Keboola.Tests
 {
@@ -18,9 +20,9 @@ namespace Keboola.Bot.Keboola.Tests
         [TestMethod()]
         public async Task RefreshTokenAsyncTest()
         {
-            var dbContext = new Mock<IDatabaseContext>();
-            var service = FakeDbContext.GetService(dbContext);
-            dbContext.Object.KeboolaUser.Add(new KeboolaUser()
+            var dbContext = EntityFrameworkMock.Create<DatabaseContext>();
+            var service = new DatabaseService(dbContext);
+            dbContext.KeboolaUser.Add(new KeboolaUser()
             {
                 Id = 0,
                 Active = true,
@@ -31,7 +33,7 @@ namespace Keboola.Bot.Keboola.Tests
                 }
             });
 
-            dbContext.Object.KeboolaUser.Add(new KeboolaUser()
+            dbContext.KeboolaUser.Add(new KeboolaUser()
             {
                 Id = 1,
                 Active = true,
@@ -44,14 +46,14 @@ namespace Keboola.Bot.Keboola.Tests
             var mock = new Mock<IKeboolaClient>();
             mock.Setup(foo => foo.RefreshTokenAsync("oldToken")).Returns(Task.FromResult("newToken"));
 
-            TokenShedulerJob tokenSheduler = new TokenShedulerJob(dbContext.Object, mock.Object);
+            TokenShedulerJob tokenSheduler = new TokenShedulerJob(dbContext, mock.Object);
             tokenSheduler.Execute(null);
-            var ssdsd = dbContext.Object.KeboolaUser.Where(a => a.Token.Expiration.Ticks < DateTime.Now.Ticks).ToList();
-            var userUnchaged = await dbContext.Object.KeboolaUser.FirstOrDefaultAsync(a => a.Id == 0);
+            var ssdsd = dbContext.KeboolaUser.Where(a => a.Token.Expiration.Ticks < DateTime.Now.Ticks).ToList();
+            var userUnchaged = await dbContext.KeboolaUser.FirstOrDefaultAsync(a => a.Id == 0);
             //Fail if change this
             Assert.AreEqual(userUnchaged.Token.Value, "newTokenUnchanged");
 
-            var userChanged = await dbContext.Object.KeboolaUser.FirstOrDefaultAsync(a => a.Id == 1);
+            var userChanged = await dbContext.KeboolaUser.FirstOrDefaultAsync(a => a.Id == 1);
             Assert.AreEqual(userChanged.Token.Value, "newToken");
 
         }

@@ -9,5 +9,7 @@
         ///     Bot framework id
         /// </summary>
         public string FrameworkId { get; set; }
+
+        public string FriendlyName => string.IsNullOrEmpty(Name) ? "anonym" : Name;
     }
 }

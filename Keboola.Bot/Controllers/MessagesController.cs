@@ -112,7 +112,7 @@ namespace Keboola.Bot
                             var yesNoButton = HeroCards.YesNoMessageWithLink(activity,
                                 await service.GetIntentAsync("Hello inactive"),
                                 "https://connection.keboola.com/admin/account/chatbot");
-                            await connector.Conversations.ReplyToActivityAsync((Activity)yesNoButton);
+                            await connector.Conversations.ReplyToActivityAsync((Activity) yesNoButton);
                         }
                     }
             }

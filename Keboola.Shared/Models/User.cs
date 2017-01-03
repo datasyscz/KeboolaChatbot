@@ -31,5 +31,11 @@ namespace Keboola.Shared
         {
             return KeboolaUser?.Active == true;
         }
+
+
+        public string IsActivatedStr
+        {
+            get{return IsActivated() ? "Yes" : "No";}
+        }
     }
 }

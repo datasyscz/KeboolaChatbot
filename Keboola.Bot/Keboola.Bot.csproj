@@ -15,9 +15,9 @@
     <AssemblyName>Keboola bot</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication />
-    <IISExpressWindowsAuthentication />
+    <IISExpressSSLPort>44367</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>disabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
@@ -280,6 +280,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\StateController.cs" />
+    <Compile Include="Controllers\NotifyController.cs" />
     <Compile Include="ConversationLogger.cs" />
     <Compile Include="DatabaseContext.cs" />
     <Compile Include="Dialogs\IntroDialog.cs" />
