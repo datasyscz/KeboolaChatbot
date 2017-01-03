@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Data.Entity;
-using System.Linq;
-using System.Threading.Tasks;
 using API;
 using Keboola.Bot.Keboola;
-using Keboola.Bot.Service;
-using Keboola.Shared;
 using Microsoft.Bot.Builder.Dialogs;
 
 namespace Keboola.Bot.Dialogs

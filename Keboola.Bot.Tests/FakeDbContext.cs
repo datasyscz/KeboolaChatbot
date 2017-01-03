@@ -1,11 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using Keboola.Bot;
 using Keboola.Bot.Service;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Tests;
 
@@ -14,11 +13,13 @@ namespace Keboola.Shared.Models
     [TestClass]
     public static class FakeDbContext
     {
-       private static Mock<DbSet<T>> MockDbSet<T>(List<T> list ) where T : class
+        private static Mock<DbSet<T>> MockDbSet<T>(List<T> list) where T : class
         {
             var data = list.AsQueryable();
             var mockSet = new Mock<DbSet<T>>();
-            mockSet.As<IDbAsyncEnumerable<T>>().Setup(m => m.GetAsyncEnumerator()).Returns(new TestDbAsyncEnumerator<T>(data.GetEnumerator()));
+            mockSet.As<IDbAsyncEnumerable<T>>()
+                .Setup(m => m.GetAsyncEnumerator())
+                .Returns(new TestDbAsyncEnumerator<T>(data.GetEnumerator()));
             mockSet.As<IQueryable<T>>().Setup(m => m.Provider).Returns(new TestDbAsyncQueryProvider<T>(data.Provider));
             mockSet.As<IQueryable<T>>().Setup(m => m.Expression).Returns(data.Expression);
             mockSet.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(data.ElementType);
@@ -29,10 +30,10 @@ namespace Keboola.Shared.Models
 
         public static DatabaseService GetService(Mock<IDatabaseContext> mockContext)
         {
-            List<KeboolaUser> users = new List<KeboolaUser>();
-            List<KeboolaToken> tokens = new List<KeboolaToken>();
-            mockContext.Setup(c => c.KeboolaUser).Returns(MockDbSet<KeboolaUser>(users).Object);
-            mockContext.Setup(c => c.KeboolaToken).Returns(MockDbSet<KeboolaToken>(tokens).Object);
+            var users = new List<KeboolaUser>();
+            var tokens = new List<KeboolaToken>();
+            mockContext.Setup(c => c.KeboolaUser).Returns(MockDbSet(users).Object);
+            mockContext.Setup(c => c.KeboolaToken).Returns(MockDbSet(tokens).Object);
             var service = new DatabaseService(mockContext.Object);
             return service;
         }

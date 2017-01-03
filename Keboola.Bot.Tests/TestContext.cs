@@ -4,7 +4,6 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Keboola.Bot;
@@ -16,62 +15,24 @@ namespace Tests
 {
     public class TestDatabaseContext : IDatabaseContext
     {
-        public TestDatabaseContext()
-        {
-        }
+        public DbSet<Message> Messages { get; set; }
+
+        public DbSet<Conversation> Conversation { get; set; }
+
+        public DbSet<User> Customer { get; set; }
+
+        public DbSet<Channel> Channel { get; set; }
+
+        public DbSet<IntentAnswer> IntentAnswer { get; set; }
+
+        public DbSet<KeboolaToken> KeboolaToken { get; set; }
+
+        public DbSet<KeboolaUser> KeboolaUser { get; set; }
 
 
-        public DbSet<Message> Messages
-        {
-            get;
-            set;
-        }
-
-        public DbSet<Conversation> Conversation
-        {
-            get;
-            set;
-        }
-
-        public DbSet<User> Customer
-        {
-            get;
-            set;
-        }
-
-        public DbSet<Channel> Channel
-        {
-            get;
-            set;
-        }
-
-        public DbSet<IntentAnswer> IntentAnswer
-        {
-            get;
-            set;
-        }
-
-        public DbSet<KeboolaToken> KeboolaToken
-        {
-            get;
-            set;
-        }
-
-        public DbSet<KeboolaUser> KeboolaUser
-        {
-            get;
-            set;
-        }
-
-      
         public int SaveChanges()
         {
             return 0;
-        }
-
-        public Task<Conversation> FindConversation(IMessageActivity activity)
-        {
-            return null;
         }
 
         public void MarkAsModified<T>(T item) where T : class
@@ -79,12 +40,22 @@ namespace Tests
             throw new NotImplementedException();
         }
 
-        public void MarkAsModified(KeboolaUser item) { }
-        public void Dispose() { }
+        public void Dispose()
+        {
+        }
 
         public Task<int> SaveChangesAsync()
         {
             return Task.FromResult(0);
+        }
+
+        public Task<Conversation> FindConversation(IMessageActivity activity)
+        {
+            return null;
+        }
+
+        public void MarkAsModified(KeboolaUser item)
+        {
         }
     }
 
@@ -132,11 +103,13 @@ namespace Tests
     {
         public TestDbAsyncEnumerable(IEnumerable<T> enumerable)
             : base(enumerable)
-        { }
+        {
+        }
 
         public TestDbAsyncEnumerable(Expression expression)
             : base(expression)
-        { }
+        {
+        }
 
         public IDbAsyncEnumerator<T> GetAsyncEnumerator()
         {

@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Keboola.Bot.Facebook
+﻿namespace Keboola.Bot.Facebook
 {
     public class SendMessageToUsModel
     {
         public Sender sender { get; set; }
         public Recipient recipient { get; set; }
         public long timestamp { get; set; }
-        public Optin optin { get; set; }  ///Custom value from sender
+        public Optin optin { get; set; } ///Custom value from sender
     }
 
     public class Sender

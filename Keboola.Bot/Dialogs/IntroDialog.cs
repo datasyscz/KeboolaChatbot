@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using Keboola.Bot.Service;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Connector;
-using Keboola.Shared;
 
 namespace Keboola.Bot.Dialogs
 {
@@ -15,7 +10,7 @@ namespace Keboola.Bot.Dialogs
     {
         private static IDatabaseContext _context;
         private static DatabaseService service;
-       
+
         public IntroDialog(IDatabaseContext db)
         {
             _context = db;
@@ -25,7 +20,7 @@ namespace Keboola.Bot.Dialogs
         {
             service = new DatabaseService(_context);
             var msg = context.MakeMessage();
-            var conversation =await service.FindConversationAsync(msg);
+            var conversation = await service.FindConversationAsync(msg);
             if (conversation.User.KeboolaUser?.Active == true)
                 await context.PostAsync("$Hello");
             else

@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using AI;
-using API;
 using Autofac;
-using Keboola.Bot.Dialogs;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Connector;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace Keboola.Bot.Tests
 {
@@ -21,10 +17,10 @@ namespace Keboola.Bot.Tests
     {
         private IContainer container;
         private Func<IDialog<object>> MakeRoot;
-        private Queue<IMessageActivity> responses = new Queue<IMessageActivity>();
+        private readonly Queue<IMessageActivity> responses = new Queue<IMessageActivity>();
         private IMessageActivity toBot;
 
-        
+
         public async Task FromUser(string text)
         {
             Debug.WriteLine("User:" + text);
@@ -44,7 +40,7 @@ namespace Keboola.Bot.Tests
             var msg = responses.Dequeue();
             if (msg.Attachments.Count > 0)
             {
-                var response = ((HeroCard)msg.Attachments[0].Content).Text;
+                var response = ((HeroCard) msg.Attachments[0].Content).Text;
                 Debug.WriteLine("Bot:" + response + " (hero)");
                 return response.ToLower().Contains(text.ToLower());
             }
@@ -52,7 +48,7 @@ namespace Keboola.Bot.Tests
             return msg.Text.ToLower().Contains(text.ToLower());
         }
 
-     /*
+        /*
         private void InitDialog(out Func<IDialog<object>> MakeRoot, out IContainer container)
         {
             var echoDialog = new RootDialog().BuildChain();

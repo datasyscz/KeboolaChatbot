@@ -1,7 +1,9 @@
-﻿using Microsoft.Owin;
+﻿using Keboola.Bot.Editor;
+using Microsoft.Owin;
 using Owin;
 
-[assembly: OwinStartupAttribute(typeof(Keboola.Bot.Editor.Startup))]
+[assembly: OwinStartup(typeof(Startup))]
+
 namespace Keboola.Bot.Editor
 {
     public partial class Startup

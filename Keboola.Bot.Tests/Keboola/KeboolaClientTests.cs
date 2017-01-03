@@ -1,43 +1,40 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Keboola.Bot.Keboola;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Keboola.Bot.Job;
+using Keboola.Bot.Service;
 using Keboola.Shared.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Telerik.JustMock.EntityFramework;
-using Keboola.Bot.Service;
 
 namespace Keboola.Bot.Keboola.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class KeboolaClientTests
     {
-        [TestMethod()]
+        [TestMethod]
         public async Task RefreshTokenAsyncTest()
         {
             var dbContext = EntityFrameworkMock.Create<DatabaseContext>();
             var service = new DatabaseService(dbContext);
-            dbContext.KeboolaUser.Add(new KeboolaUser()
+            dbContext.KeboolaUser.Add(new KeboolaUser
             {
                 Id = 0,
                 Active = true,
-                Token = new KeboolaToken()
+                Token = new KeboolaToken
                 {
                     Expiration = DateTime.Now + TimeSpan.FromDays(30),
                     Value = "newTokenUnchanged"
                 }
             });
 
-            dbContext.KeboolaUser.Add(new KeboolaUser()
+            dbContext.KeboolaUser.Add(new KeboolaUser
             {
                 Id = 1,
                 Active = true,
-                Token = new KeboolaToken()
+                Token = new KeboolaToken
                 {
                     Expiration = DateTime.Now - TimeSpan.FromDays(-20),
                     Value = "oldToken"
@@ -46,7 +43,7 @@ namespace Keboola.Bot.Keboola.Tests
             var mock = new Mock<IKeboolaClient>();
             mock.Setup(foo => foo.RefreshTokenAsync("oldToken")).Returns(Task.FromResult("newToken"));
 
-            TokenShedulerJob tokenSheduler = new TokenShedulerJob(dbContext, mock.Object);
+            var tokenSheduler = new TokenShedulerJob(dbContext, mock.Object);
             tokenSheduler.Execute(null);
             var ssdsd = dbContext.KeboolaUser.Where(a => a.Token.Expiration.Ticks < DateTime.Now.Ticks).ToList();
             var userUnchaged = await dbContext.KeboolaUser.FirstOrDefaultAsync(a => a.Id == 0);
@@ -55,7 +52,6 @@ namespace Keboola.Bot.Keboola.Tests
 
             var userChanged = await dbContext.KeboolaUser.FirstOrDefaultAsync(a => a.Id == 1);
             Assert.AreEqual(userChanged.Token.Value, "newToken");
-
         }
     }
 }
