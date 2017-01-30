@@ -36,8 +36,14 @@ namespace Keboola.Bot.Job
             foreach (var keboolaUser in needRefresh)
                 try
                 {
-                    var newToken = Task.Run(() => _client.RefreshTokenAsync(keboolaUser.Token.Value)).Result;
-                    keboolaUser.Token.Value = newToken;
+                    var verifyResponse = Task.Run(() => _client.VerifyTokenAsync(keboolaUser.Token.Value)).Result;
+                    if (verifyResponse != null)
+                    {
+                        var newToken =
+                            Task.Run(() => _client.RefreshTokenAsync(verifyResponse.token, int.Parse(verifyResponse.id)))
+                                .Result;
+                        keboolaUser.Token.Value = newToken;
+                    }
                 }
                 catch (Exception ex)
                 {

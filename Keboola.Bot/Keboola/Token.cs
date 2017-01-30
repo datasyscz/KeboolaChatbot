@@ -14,7 +14,8 @@ namespace Keboola.Bot.Keboola
 {
     public interface IKeboolaClient
     {
-        Task<string> RefreshTokenAsync(string token);
+        Task<string> RefreshTokenAsync(string token, int id);
+        Task<Responses.VerifyTokenResponse> VerifyTokenAsync(string token);
     }
 
     [Serializable]
@@ -27,15 +28,15 @@ namespace Keboola.Bot.Keboola
             this.baseUrl = baseUrl;
         }
 
-        public async Task<string> RefreshTokenAsync(string token)
+        public async Task<string> RefreshTokenAsync(string token, int id)
         {
             var baseAddress = new Uri(baseUrl);
-            using (var httpClient = new HttpClient {BaseAddress = baseAddress})
+            using (var httpClient = new HttpClient { BaseAddress = baseAddress })
             {
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("x-storageapi-token", token);
                 using (var content = new StringContent(""))
                 {
-                    using (var response = await httpClient.PostAsync("v2/storage/tokens/id_token/refresh", content))
+                    using (var response = await httpClient.PostAsync($"v2/storage/tokens/{id}/refresh", content))
                     {
                         string responseData = await response.Content.ReadAsStringAsync();
                         try
@@ -47,7 +48,33 @@ namespace Keboola.Bot.Keboola
                         {
                             Debug.Fail(ex.Message);
                         }
-                        return null;
+                    }
+                }
+            }
+            return null;
+        }
+
+
+        public async Task<Responses.VerifyTokenResponse> VerifyTokenAsync(string token)
+        {
+            var baseAddress = new Uri(baseUrl);
+            using (var httpClient = new HttpClient { BaseAddress = baseAddress })
+            {
+                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("x-storageapi-token", token);
+
+                using (var response = await httpClient.GetAsync("v2/storage/tokens/verify"))
+                {
+                    string responseData = await response.Content.ReadAsStringAsync();
+                    try
+                    {
+                        var obj = JsonConvert.DeserializeObject<Responses.VerifyTokenResponse>(responseData);
+                        if (obj.token == null)
+                            return null;
+                        return obj;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Fail(ex.Message);
                     }
                 }
             }
@@ -61,18 +88,13 @@ namespace Keboola.Bot.Keboola
         {
             public string id { get; set; }
             public string token { get; set; }
-            public string description { get; set; }
-            public string uri { get; set; }
-            public bool isMasterToken { get; set; }
-            public Bucketpermissions bucketPermissions { get; set; }
+        
         }
 
-        public class Bucketpermissions
+        public class VerifyTokenResponse
         {
-            public string incmain { get; set; }
-            public string outcmain { get; set; }
-            public string inctwitter { get; set; }
+            public string id { get; set; }
+            public string token { get; set; }
         }
-
     }
 }

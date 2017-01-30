@@ -10,22 +10,39 @@
 <table class="table">
     <tr>
         <th>
-           Username
+            ID
+        </th>
+        <th>
+            Username
+        </th>
+        <th>
+            Channel ID
         </th>
         <th>
            Active
         </th>
-      
-     
+        <th/>
     </tr>
-
 @foreach (var item in Model) {
     <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Id)
+        </td>
         <td>
             @Html.DisplayFor(modelItem => item.UserChannel.FriendlyName)
         </td>
         <td>
-            @Html.DisplayFor(modelItem =>  item.IsActivatedStr);
+            @Html.DisplayFor(modelItem => item.UserChannel.Id)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsActivatedStr)
+        </td>
+        <td>
+            @Html.ActionLink(
+                "Delete",
+                "Delete",
+                new {id = item.Id},
+                new {onclick = "return confirm('Are you sure you wish to delete this article?');"})
         </td>
     </tr>
 }

@@ -78,7 +78,7 @@ namespace Keboola.Bot.Service
         public List<KeboolaUser> GetExpiredUsersTokens()
         {
             DateTime now = DateTime.Now;
-            return _context.KeboolaUser.Where(o => EntityFunctions.TruncateTime(o.Token.Expiration) <= now).ToList();
+            return _context.KeboolaUser.Where(o => EntityFunctions.TruncateTime(o.Token.Expiration) <= now && o.Active).ToList();
         }
 
         public async Task<string> GetIntentAsync(string id)

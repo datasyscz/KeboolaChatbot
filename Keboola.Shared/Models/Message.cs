@@ -17,7 +17,5 @@ namespace Keboola.Shared
         public virtual DateTime Date { get; set; }
 
         public bool SendedByUser { get; set; }
-
-        public virtual User Customer { get; set; }
     }
 }

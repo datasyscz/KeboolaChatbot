@@ -100,6 +100,7 @@ namespace Keboola.Bot
                             }
                             catch (Exception ex)
                             {
+                                //Reset conversation if exception
                                 await Reset(activity, userData, stateClient);
                                 await
                                     Microsoft.Bot.Builder.Dialogs.Conversation.SendAsync(activity,
@@ -138,7 +139,7 @@ namespace Keboola.Bot
                 var ssd = obj["optin"];
                 if (obj["optin"] != null)
                 {
-                    if (conversationLog.User == null)
+                    if (conversationLog.User.KeboolaUser == null)
                     {
                         conversationLog.User.KeboolaUser = new KeboolaUser
                         {

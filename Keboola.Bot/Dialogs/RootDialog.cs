@@ -10,7 +10,7 @@ namespace Keboola.Bot.Dialogs
     {
         public static WitAI WitAI;
         public static KeboolaClient KeboolaClient;
-        private static IDatabaseContext _dbContext;
+        public static IDatabaseContext _dbContext;
 
         public RootDialog(IDatabaseContext db)
         {

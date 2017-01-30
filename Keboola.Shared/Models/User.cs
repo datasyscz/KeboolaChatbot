@@ -18,11 +18,6 @@ namespace Keboola.Shared
         public virtual Channel BotChannel { get; set; }
         public virtual KeboolaUser KeboolaUser { get; set; }
 
-        /// <summary>
-        ///     Bot framework id
-        /// </summary>
-        public int ConversationID { get; set; }
-
         public string BaseUri { get; set; }
 
         public string Name { get; set; }

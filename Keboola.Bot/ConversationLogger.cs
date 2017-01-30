@@ -73,7 +73,6 @@ namespace Keboola.Bot
                 _db.Conversation.Add(conversation);
             }
 
-            conversation.User.ConversationID = conversation.ConversationID;
             return conversation;
         }
 

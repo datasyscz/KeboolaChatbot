@@ -43,7 +43,7 @@
                 @Html.NewLine2Br(item.StoryShort)
             </td>
             <td>
-                @Html.ActionLink("Details", "Details", new {id = item.ConversationID})
+                @Html.ActionLink("Details", "Index", new {id = item.ConversationID})
             </td>
         </tr>
     }

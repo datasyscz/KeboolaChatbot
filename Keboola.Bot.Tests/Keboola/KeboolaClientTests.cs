@@ -41,7 +41,7 @@ namespace Keboola.Bot.Keboola.Tests
                 }
             });
             var mock = new Mock<IKeboolaClient>();
-            mock.Setup(foo => foo.RefreshTokenAsync("oldToken")).Returns(Task.FromResult("newToken"));
+         //   mock.Setup(foo => foo.RefreshTokenAsync("oldToken")).Returns(Task.FromResult("newToken"));
 
             var tokenSheduler = new TokenShedulerJob(dbContext, mock.Object);
             tokenSheduler.Execute(null);

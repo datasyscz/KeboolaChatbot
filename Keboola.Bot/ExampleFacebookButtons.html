@@ -1,38 +1,6 @@
 ﻿<html>
 <head>
     <script>
-
-        function guid() {
-            function s4() {
-                return Math.floor((1 + Math.random()) * 0x10000)
-                    .toString(16)
-                    .substring(1);
-            }
-
-            return s4() +
-                s4() +
-                '-' +
-                s4() +
-                '-' +
-                s4() +
-                '-' +
-                s4() +
-                '-' +
-                s4() +
-                s4() +
-                s4();
-        }
-
-        var guid = guid();
-        var div = document.createElement("div");
-        div.setAttribute('class', "fb-send-to-messenger");
-        div.setAttribute('messenger_app_id', "338746803166464");
-        div.setAttribute('page_id', "911085282368477");
-        div.setAttribute('data-ref', guid);
-        div.setAttribute('color', "blue");
-        div.setAttribute('size', "standard");
-        document.getElementById("fbButton").appendChild(div);
-
         window.fbAsyncInit = function() {
             FB.init({
                 appId: "338746803166464",
@@ -61,17 +29,12 @@
     </script>
 </head>
 <body>
-<div id="guid">guid</div>
-<script>
-    Document.getElementById('guid').innerHTML = guid();
-</script>
-<div id="fbButton"></div>
-<!--<div class="fb-send-to-messenger"
+<div class="fb-send-to-messenger"
          messenger_app_id="338746803166464"
          page_id="911085282368477"
-         data-ref="FOO_UserID2"
+         data-ref="2009-65167-c2f5cdc23ef6b0801cddc2d26735a0f5839e3f31"
          color="blue"
-         size="standard">-->
+         size="standard">
 </div>
 
 </body>

@@ -8,17 +8,21 @@ using System.Threading.Tasks;
 using System.Web.Configuration;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Web.Mvc;
 using Keboola.Bot.Service;
-using Keboola.Shared.Models;
 
 namespace Keboola.Bot.Controllers
 {
     public class StateModel
     {
+        /// <summary>
+        /// User is active or inactive
+        /// </summary>
         [Required]
         public bool Active { get; set; }
 
+        /// <summary>
+        /// Keboola user token
+        /// </summary>
         [Required]
         public string Token { get; set; }
     }
@@ -26,8 +30,6 @@ namespace Keboola.Bot.Controllers
     /// <summary>
     /// State controller manage acces from keboola backend to chatbota backend.
     /// </summary>
-    [System.Web.Http.Authorize]
-    [System.Web.Http.RoutePrefix("api/State")]
     public class StateController : ApiController
     {
         private IDatabaseContext db = new DatabaseContext();
@@ -50,6 +52,7 @@ namespace Keboola.Bot.Controllers
 
         // POST api/state
         [ResponseType(typeof(void))]
+
         public async Task<IHttpActionResult> Post([FromBody] StateModel state)
         {
             //Validate input
@@ -72,10 +75,9 @@ namespace Keboola.Bot.Controllers
         }
 
         //PUT api/state/654dfs6sd54f
-        [System.Web.Http.Authorize]
+        [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> Put(string token, [FromBody] StateModel state)
         {
-           
             //Validate input
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -83,7 +85,6 @@ namespace Keboola.Bot.Controllers
                 return BadRequest();
             try
             {
-
                 //Find exist record
                 var keboolaUser = await service.GetKeboolaUserByTokenAsync(token);
 
