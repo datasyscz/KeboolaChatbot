@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Keboola.Shared.Models
+namespace Keboola.Bot
 {
     public class KeboolaToken
     {
@@ -15,6 +15,7 @@ namespace Keboola.Shared.Models
         [Required]
         public string Value { get; set; }
         [Required]
+        [DataType(DataType.DateTime)]
         public DateTime Expiration { get; set; }
     }
 }

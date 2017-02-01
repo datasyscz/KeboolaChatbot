@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keboola.Bot.Editor", "Keboo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keboola.Bot.Editor.Tests", "Keboola.Bot.Editor.Tests\Keboola.Bot.Editor.Tests.csproj", "{D8B2989D-3776-4DE5-8042-8FA7115CD30E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keboola.Shared", "Keboola.Shared\Keboola.Shared.csproj", "{281FED79-F9D9-4B9C-B178-8D78CCE575DD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chatbot.Shared", "Keboola.Shared\Chatbot.Shared.csproj", "{281FED79-F9D9-4B9C-B178-8D78CCE575DD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keboola.Bot", "Keboola.Bot\Keboola.Bot.csproj", "{A8BA1066-5695-4D71-ABB4-65E5A5E0C3D4}"
 EndProject

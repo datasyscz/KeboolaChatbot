@@ -1,4 +1,4 @@
-﻿namespace Keboola.Shared
+﻿namespace Chatbot.Shared.Models
 {
     public class Channel
     {

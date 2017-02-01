@@ -1,36 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Keboola.Shared.Models;
 
-namespace Keboola.Shared
+namespace Chatbot.Shared.Models
 {
+    [Serializable]
+    public class User : IUser<Channel>
+    {
+    }
+
     /// <summary>
-    ///     Chat bot user
+    ///     Chat bot user interface
     /// </summary>
     [Serializable]
-    public class User
+    public class IUser<TChannel> where TChannel : Channel, new()
     {
         [Key]
         public int Id { get; set; }
 
-        public virtual Channel UserChannel { get; set; }
-        public virtual Channel BotChannel { get; set; }
-        public virtual KeboolaUser KeboolaUser { get; set; }
-
+        public virtual DateTime date { get; set; }
+        public virtual TChannel UserChannel { get; set; }
+        public virtual TChannel BotChannel { get; set; }
         public string BaseUri { get; set; }
-
         public string Name { get; set; }
 
-        public bool IsActivated()
+        public virtual void SendMessage()
         {
-            return KeboolaUser?.Active == true;
-        }
-
-
-        public string IsActivatedStr
-        {
-            get{return IsActivated() ? "Yes" : "No";}
+            //TODO
         }
     }
 }

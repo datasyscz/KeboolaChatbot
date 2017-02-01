@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Keboola.Shared
+namespace Chatbot.Shared.Models
 {
     /// <summary>
     ///     Message in database

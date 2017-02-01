@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Keboola.Shared.Models
+namespace Keboola.Bot
 {
     [Serializable]
     public class KeboolaUser

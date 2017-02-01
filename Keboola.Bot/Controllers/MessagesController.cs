@@ -9,10 +9,9 @@ using API;
 using Autofac;
 using Keboola.Bot.Dialogs;
 using Keboola.Bot.Service;
-using Keboola.Shared;
-using Keboola.Shared.Models;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json.Linq;
+
 
 namespace Keboola.Bot
 {

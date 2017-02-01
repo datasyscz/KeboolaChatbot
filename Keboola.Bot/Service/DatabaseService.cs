@@ -7,10 +7,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Keboola.Bot.Controllers;
-using Keboola.Shared;
-using Keboola.Shared.Models;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json.Linq;
+using Chatbot.Shared.Models;
 
 namespace Keboola.Bot.Service
 {
@@ -35,7 +34,7 @@ namespace Keboola.Bot.Service
             return await _context.KeboolaUser.AnyAsync(a => a.Token.Value == token && a.Active);
         }
 
-        public async Task<Shared.Conversation> FindConversationAsync(
+        public async Task<Conversation> FindConversationAsync(
            IMessageActivity activity)
         {
             return
@@ -106,6 +105,16 @@ namespace Keboola.Bot.Service
                 }
             }
             return false;
+        }
+
+        public async Task<User> GetUserAsync(KeboolaUser keboolaUser)
+        {
+           return await _context.Customer.FirstOrDefaultAsync(a => a.KeboolaUser.Id == keboolaUser.Id);
+        }
+
+        public async Task<Conversation> GetConversationAsync(KeboolaUser keboolaUser)
+        {
+            return await _context.Conversation.Where(a => a.User.KeboolaUser.Id == keboolaUser.Id).FirstOrDefaultAsync();
         }
     }
 }

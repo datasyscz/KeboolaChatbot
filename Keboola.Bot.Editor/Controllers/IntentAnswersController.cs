@@ -3,7 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Keboola.Bot.Editor.Models;
-using Keboola.Shared;
+using Chatbot.Shared.Models;
 
 namespace Keboola.Bot.Editor.Controllers
 {

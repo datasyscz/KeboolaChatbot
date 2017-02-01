@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Keboola.Shared
+namespace Chatbot.Shared.Models
 {
     /// <summary>
     ///     Predefined answer

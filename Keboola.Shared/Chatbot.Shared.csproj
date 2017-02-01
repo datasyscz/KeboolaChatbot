@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Keboola.Shared</RootNamespace>
-    <AssemblyName>Keboola.Shared</AssemblyName>
+    <AssemblyName>Chatbot.Shared</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -104,8 +104,6 @@
   <ItemGroup>
     <Compile Include="Models\Channel.cs" />
     <Compile Include="Models\Conversation.cs" />
-    <Compile Include="Models\KeboolaToken.cs" />
-    <Compile Include="Models\KeboolaUser.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\IntentAnswer.cs" />
     <Compile Include="Models\Message.cs" />

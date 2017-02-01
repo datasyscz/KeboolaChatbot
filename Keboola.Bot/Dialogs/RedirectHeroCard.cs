@@ -38,7 +38,7 @@ namespace Keboola.Bot.Dialogs
             cardButtons.Add(noButton);
             HeroCard plCard = new HeroCard()
             {
-                Title = text,
+                Text = text,
                 Buttons = cardButtons
             };
             Attachment plAttachment = plCard.ToAttachment();

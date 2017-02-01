@@ -76,17 +76,17 @@ namespace Keboola.Bot.Controllers
 
         //PUT api/state/654dfs6sd54f
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> Put(string token, [FromBody] StateModel state)
+        public async Task<IHttpActionResult> Put(string id, [FromBody] StateModel state)
         {
             //Validate input
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            if (String.IsNullOrEmpty(token))
+            if (String.IsNullOrEmpty(id))
                 return BadRequest();
             try
             {
                 //Find exist record
-                var keboolaUser = await service.GetKeboolaUserByTokenAsync(token);
+                var keboolaUser = await service.GetKeboolaUserByTokenAsync(id);
 
                 //Ignor expired tokens or non-exist
                 if (keboolaUser == null || DateTime.Now > keboolaUser.Token.Expiration)
@@ -100,5 +100,21 @@ namespace Keboola.Bot.Controllers
                 return StatusCode(HttpStatusCode.BadRequest);
             }
         }
+
+        //private async Task SendActibvatedMessage(bool active, KeboolaUser keboolaUser)
+        //{
+        //    try
+        //    {
+        //        if (active)
+        //        {
+        //            var conversation = await service.GetConversationAsync(keboolaUser);
+        //            conversation.SendMessage("Test");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //    }
+        //}
     }
 }

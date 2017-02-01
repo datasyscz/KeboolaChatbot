@@ -12,7 +12,7 @@ namespace API
 
     public class WitAI : IWitAI
     {
-        private static readonly HttpClient client = new HttpClient();
+        private readonly HttpClient client = new HttpClient();
 
         public WitAI(string token, string accept)
         {
@@ -28,7 +28,6 @@ namespace API
             var res = await client.GetAsync($"https://api.wit.ai/message?q={message}");
             if (res.IsSuccessStatusCode)
             {
-                var reee = await res.Content.ReadAsStringAsync();
                 entities = await res.Content.ReadAsAsync<WitModels.Response>();
             }
             return entities;

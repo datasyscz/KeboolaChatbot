@@ -3,9 +3,9 @@ using System.Data.Entity;
 using System.Threading;
 using System.Threading.Tasks;
 using Keboola.Bot.Service;
-using Keboola.Shared;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
+using Chatbot.Shared.Models;
 
 namespace Keboola.Bot
 {
@@ -38,7 +38,7 @@ namespace Keboola.Bot
             {
                 conversation = new Conversation
                 {
-                    User = new User(),
+                    User = new User() { date = DateTime.Now },
                     Name = activity.Conversation.Name,
                     FrameworkId = activity.Conversation.Id,
                     BaseUri = activity.ServiceUrl

@@ -2,8 +2,7 @@ using System;
 using System.Data.Entity;
 using System.Threading.Tasks;
 using Keboola.Bot.Service;
-using Keboola.Shared;
-using Keboola.Shared.Models;
+using Chatbot.Shared.Models;
 using Microsoft.Bot.Connector;
 
 namespace Keboola.Bot
@@ -38,8 +37,6 @@ namespace Keboola.Bot
         public DbSet<KeboolaToken> KeboolaToken { get; set; }
         public DbSet<KeboolaUser> KeboolaUser { get; set; }
 
-       
-      
         public void MarkAsModified<T>(T item) where T : class
         {
             Entry(item).State = EntityState.Modified;

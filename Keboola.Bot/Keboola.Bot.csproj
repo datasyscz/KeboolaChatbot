@@ -241,9 +241,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="BotToUserLogger.cs" />
     <Compile Include="CommandHandler.cs" />
-    <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="Controllers\ChannelsController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\StateController.cs" />
     <Compile Include="Controllers\NotifyController.cs" />
@@ -258,7 +256,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Job\TokenSheduler.cs" />
-    <Compile Include="Keboola\Client.cs" />
     <Compile Include="Keboola\Token.cs" />
     <Compile Include="Migrations\201611081323470_init.cs" />
     <Compile Include="Migrations\201611081323470_init.Designer.cs">
@@ -284,8 +281,16 @@
     <Compile Include="Migrations\201701031341287_fidDB.Designer.cs">
       <DependentUpon>201701031341287_fidDB.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201701311559042_sdsad.cs" />
+    <Compile Include="Migrations\201701311559042_sdsad.Designer.cs">
+      <DependentUpon>201701311559042_sdsad.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\ConversationExt.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\KeboolaToken.cs" />
+    <Compile Include="Models\KeboolaUser.cs" />
+    <Compile Include="Models\UserExt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -293,6 +298,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Service\DatabaseService.cs" />
+    <Compile Include="StartUp.cs" />
     <Compile Include="Validation.cs" />
     <Compile Include="Wit\WitAI.cs" />
     <Compile Include="Wit\WitModels.cs" />
@@ -319,9 +325,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Keboola.Shared\Keboola.Shared.csproj">
+    <ProjectReference Include="..\Keboola.Shared\Chatbot.Shared.csproj">
       <Project>{281fed79-f9d9-4b9c-b178-8d78cce575dd}</Project>
-      <Name>Keboola.Shared</Name>
+      <Name>Chatbot.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -342,6 +348,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201701031341287_fidDB.resx">
       <DependentUpon>201701031341287_fidDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201701311559042_sdsad.resx">
+      <DependentUpon>201701311559042_sdsad.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
