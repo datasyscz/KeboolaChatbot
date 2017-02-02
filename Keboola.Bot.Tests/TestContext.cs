@@ -17,9 +17,9 @@ namespace Tests
     {
         public DbSet<Message> Messages { get; set; }
 
-        public DbSet<Conversation> Conversation { get; set; }
+        public DbSet<ConversationExt> Conversation { get; set; }
 
-        public DbSet<User> Customer { get; set; }
+        public DbSet<UserExt> Customer { get; set; }
 
         public DbSet<Channel> Channel { get; set; }
 
@@ -49,7 +49,7 @@ namespace Tests
             return Task.FromResult(0);
         }
 
-        public Task<Conversation> FindConversation(IMessageActivity activity)
+        public Task<ConversationExt> FindConversation(IMessageActivity activity)
         {
             return null;
         }

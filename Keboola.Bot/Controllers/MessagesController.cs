@@ -64,7 +64,7 @@ namespace Keboola.Bot
                     if ((activity.ChannelId.ToLower() != "facebook") ||
                         (activity.Type != ActivityTypes.ConversationUpdate))
                     {
-                        Conversation conversation = null;
+                        ConversationExt conversation = null;
                         //Dont log welcome message
                         if (
                             !((activity.ChannelId.ToLower() == "directline") &&
@@ -124,7 +124,7 @@ namespace Keboola.Bot
             return response;
         }
 
-        private async Task<Conversation> LogMessage(Activity activity)
+        private async Task<ConversationExt> LogMessage(Activity activity)
         {
             //Log incoming message
             var logger = new ConversationLogger(_db);

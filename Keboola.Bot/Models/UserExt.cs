@@ -1,12 +1,14 @@
 ﻿using Chatbot.Shared.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
 namespace Keboola.Bot
 {
-    public class User : Chatbot.Shared.Models.User
+    [Table("User")]
+    public class UserExt : Chatbot.Shared.Models.User
     {
         public virtual KeboolaUser KeboolaUser { get; set; }
 

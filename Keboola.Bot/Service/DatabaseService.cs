@@ -34,9 +34,10 @@ namespace Keboola.Bot.Service
             return await _context.KeboolaUser.AnyAsync(a => a.Token.Value == token && a.Active);
         }
 
-        public async Task<Conversation> FindConversationAsync(
+        public async Task<ConversationExt> FindConversationAsync(
            IMessageActivity activity)
         {
+
             return
                 await _context.Conversation
                     .FirstOrDefaultAsync(
@@ -49,7 +50,7 @@ namespace Keboola.Bot.Service
         }
 
 
-        public async Task AddUserAndToken(StateModel state)
+        public async Task<KeboolaUser> AddUserAndToken(StateModel state)
         {
             KeboolaToken newToken = new KeboolaToken()
             {
@@ -67,6 +68,7 @@ namespace Keboola.Bot.Service
             //Add new user
             _context.KeboolaUser.Add(newUser);
             await _context.SaveChangesAsync();
+            return newUser;
         }
 
         public async Task<KeboolaUser> GetKeboolaUserByTokenAsync(string token)
@@ -107,12 +109,12 @@ namespace Keboola.Bot.Service
             return false;
         }
 
-        public async Task<User> GetUserAsync(KeboolaUser keboolaUser)
+        public async Task<UserExt> GetUserAsync(KeboolaUser keboolaUser)
         {
            return await _context.Customer.FirstOrDefaultAsync(a => a.KeboolaUser.Id == keboolaUser.Id);
         }
 
-        public async Task<Conversation> GetConversationAsync(KeboolaUser keboolaUser)
+        public async Task<ConversationExt> GetConversationAsync(KeboolaUser keboolaUser)
         {
             return await _context.Conversation.Where(a => a.User.KeboolaUser.Id == keboolaUser.Id).FirstOrDefaultAsync();
         }

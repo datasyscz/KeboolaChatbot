@@ -65,7 +65,11 @@ namespace Keboola.Bot.Controllers
                     return StatusCode(HttpStatusCode.Conflict);
 
                 //Add user
-                await service.AddUserAndToken(state);
+                var keboolaUser = await service.AddUserAndToken(state);
+
+                if (state.Active)
+                    await SendActivatedMessage(keboolaUser);
+
                 return StatusCode(HttpStatusCode.OK);
             }
             catch (DbEntityValidationException)
@@ -93,6 +97,10 @@ namespace Keboola.Bot.Controllers
                     return StatusCode(HttpStatusCode.NotFound);
                 keboolaUser.Active = state.Active;
                 await db.SaveChangesAsync();
+
+                if (state.Active)
+                    await SendActivatedMessage(keboolaUser);
+
                 return StatusCode(HttpStatusCode.OK);
             }
             catch (DbEntityValidationException)
@@ -101,20 +109,17 @@ namespace Keboola.Bot.Controllers
             }
         }
 
-        //private async Task SendActibvatedMessage(bool active, KeboolaUser keboolaUser)
-        //{
-        //    try
-        //    {
-        //        if (active)
-        //        {
-        //            var conversation = await service.GetConversationAsync(keboolaUser);
-        //            conversation.SendMessage("Test");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
+        private async Task SendActivatedMessage(KeboolaUser keboolaUser)
+        {
+            try
+            {
+                var conversation = await service.GetConversationAsync(keboolaUser);
+                conversation.SendMessage("Your account is activated");
+            }
+            catch (Exception ex)
+            {
 
-        //    }
-        //}
+            }
+        }
     }
 }

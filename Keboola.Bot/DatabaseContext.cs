@@ -10,8 +10,8 @@ namespace Keboola.Bot
     public interface IDatabaseContext : IDisposable
     {
         DbSet<Message> Messages { get; set; }
-        DbSet<Conversation> Conversation { get; set; }
-        DbSet<User> Customer { get; set; }
+        DbSet<ConversationExt> Conversation { get; set; }
+        DbSet<UserExt> Customer { get; set; }
         DbSet<Channel> Channel { get; set; }
         DbSet<IntentAnswer> IntentAnswer { get; set; }
         DbSet<KeboolaToken> KeboolaToken { get; set; }
@@ -30,8 +30,8 @@ namespace Keboola.Bot
         }
 
         public DbSet<Message> Messages { get; set; }
-        public DbSet<Conversation> Conversation { get; set; }
-        public DbSet<User> Customer { get; set; }
+        public DbSet<ConversationExt> Conversation { get; set; }
+        public DbSet<UserExt> Customer { get; set; }
         public DbSet<Channel> Channel { get; set; }
         public DbSet<IntentAnswer> IntentAnswer { get; set; }
         public DbSet<KeboolaToken> KeboolaToken { get; set; }

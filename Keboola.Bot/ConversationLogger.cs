@@ -30,15 +30,15 @@ namespace Keboola.Bot
         /// <param name="activity">Incoming message</param>
         /// <param name="db"></param>
         /// <returns></returns>
-        public async Task<Conversation> AddOrUpdateConversation(IMessageActivity activity)
+        public async Task<ConversationExt> AddOrUpdateConversation(IMessageActivity activity)
         {
             //Find conversation
             var conversation = await service.FindConversationAsync(activity);
             if (conversation == null)
             {
-                conversation = new Conversation
+                conversation = new ConversationExt
                 {
-                    User = new User() { date = DateTime.Now },
+                    User = new UserExt() { date = DateTime.Now },
                     Name = activity.Conversation.Name,
                     FrameworkId = activity.Conversation.Id,
                     BaseUri = activity.ServiceUrl

@@ -17,7 +17,6 @@ namespace Keboola.Bot
         }
     }
 
-
     public class AuthContext : IdentityDbContext<IdentityUser>
     {
         public AuthContext()

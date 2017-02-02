@@ -7,7 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Keboola.Bot.Editor.Models;
-using Keboola.Shared;
+
 using PagedList;
 
 namespace Keboola.Bot.Editor.Controllers

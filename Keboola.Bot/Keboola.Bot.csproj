@@ -281,6 +281,10 @@
     <Compile Include="Migrations\201701311559042_sdsad.Designer.cs">
       <DependentUpon>201701311559042_sdsad.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702021242421_renameTable.cs" />
+    <Compile Include="Migrations\201702021242421_renameTable.Designer.cs">
+      <DependentUpon>201702021242421_renameTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ConversationExt.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -347,6 +351,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201701311559042_sdsad.resx">
       <DependentUpon>201701311559042_sdsad.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702021242421_renameTable.resx">
+      <DependentUpon>201702021242421_renameTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
