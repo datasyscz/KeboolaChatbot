@@ -32,6 +32,7 @@ namespace Keboola.Bot.Controllers
     /// </summary>
     public class StateController : ApiController
     {
+        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private IDatabaseContext db = new DatabaseContext();
         private DatabaseService service;
 
@@ -72,8 +73,9 @@ namespace Keboola.Bot.Controllers
 
                 return StatusCode(HttpStatusCode.OK);
             }
-            catch (DbEntityValidationException)
+            catch (DbEntityValidationException ex)
             {
+                logger.Error(ex);
                 return StatusCode(HttpStatusCode.BadRequest);
             }
         }
@@ -103,8 +105,9 @@ namespace Keboola.Bot.Controllers
 
                 return StatusCode(HttpStatusCode.OK);
             }
-            catch (DbEntityValidationException)
+            catch (DbEntityValidationException ex)
             {
+                logger.Error(ex);
                 return StatusCode(HttpStatusCode.BadRequest);
             }
         }
@@ -118,7 +121,7 @@ namespace Keboola.Bot.Controllers
             }
             catch (Exception ex)
             {
-
+                logger.Error(ex);
             }
         }
     }

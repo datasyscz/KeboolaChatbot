@@ -10,6 +10,7 @@ namespace Keboola.Bot.Job
 {
     public class TokenShedulerJob : IJob
     {
+        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IKeboolaClient _client;
         private readonly IDatabaseContext _context;
         private int _deadLineDays = 30;
@@ -47,6 +48,7 @@ namespace Keboola.Bot.Job
                 }
                 catch (Exception ex)
                 {
+                    logger.Error(ex);
                     Debug.Fail(ex.Message);
                 }
             _context.SaveChanges();

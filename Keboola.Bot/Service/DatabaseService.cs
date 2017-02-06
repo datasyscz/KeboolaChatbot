@@ -16,6 +16,7 @@ namespace Keboola.Bot.Service
     [Serializable]
     public class DatabaseService
     {
+        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static IDatabaseContext _context;
         public static TimeSpan TokenExpiration = new TimeSpan(30,0,0);
 
@@ -37,16 +38,23 @@ namespace Keboola.Bot.Service
         public async Task<ConversationExt> FindConversationAsync(
            IMessageActivity activity)
         {
-
-            return
-                await _context.Conversation
-                    .FirstOrDefaultAsync(
-                        a =>
-                            (a.FrameworkId == activity.Conversation.Id)
-                            &&
-                            (a.BaseUri == activity.ServiceUrl)
-                        //Need check service url too, ConversationID is unique only for serviceUrl 
-                    );
+            try
+            {
+                return
+                    await _context.Conversation
+                        .FirstOrDefaultAsync(
+                            a =>
+                                (a.FrameworkId == activity.Conversation.Id)
+                                &&
+                                (a.BaseUri == activity.ServiceUrl)
+                            //Need check service url too, ConversationID is unique only for serviceUrl 
+                        );
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex);
+                return null;
+            }
         }
 
 

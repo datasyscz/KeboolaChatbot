@@ -8,6 +8,7 @@ namespace Keboola.Bot
 {
     public class Validation
     {
+        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private readonly WitAI witAI;
 
         public Validation(WitAI witAI)
@@ -33,6 +34,7 @@ namespace Keboola.Bot
             }
             catch (Exception ex)
             {
+                logger.Error("WitAI",ex);
                 Debug.Fail(ex.Message);
             }
 

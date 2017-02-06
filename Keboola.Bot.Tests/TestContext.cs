@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Chatbot.Shared.Models;
 using Keboola.Bot;
 using Keboola.Shared;
 using Keboola.Shared.Models;

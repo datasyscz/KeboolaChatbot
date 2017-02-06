@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Keboola.Bot.Service;
 using Newtonsoft.Json;
 
 namespace Keboola.Bot.Keboola
@@ -21,6 +15,7 @@ namespace Keboola.Bot.Keboola
     [Serializable]
     public class KeboolaClient : IKeboolaClient
     {
+        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private string baseUrl;
 
         public KeboolaClient(string baseUrl)
@@ -46,6 +41,7 @@ namespace Keboola.Bot.Keboola
                         }
                         catch (Exception ex)
                         {
+                            logger.Error(ex);
                             Debug.Fail(ex.Message);
                         }
                     }
@@ -74,6 +70,7 @@ namespace Keboola.Bot.Keboola
                     }
                     catch (Exception ex)
                     {
+                        logger.Error(ex);
                         Debug.Fail(ex.Message);
                     }
                 }

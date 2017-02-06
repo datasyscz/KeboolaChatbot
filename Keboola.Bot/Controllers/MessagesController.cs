@@ -18,6 +18,8 @@ namespace Keboola.Bot
     [BotAuthentication]
     public class MessagesController : ApiController
     {
+        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly IDatabaseContext _db;
         private DatabaseService service;
 
@@ -104,6 +106,7 @@ namespace Keboola.Bot
                                 await
                                     Microsoft.Bot.Builder.Dialogs.Conversation.SendAsync(activity,
                                         new RootDialog(_db).BuildChain);
+                                logger.Error(ex);
                                 Debug.Fail(ex.Message);
                             }
                         else
