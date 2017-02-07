@@ -1,5 +1,5 @@
 ﻿
-@model PagedList.IPagedList<Keboola.Shared.Conversation>
+@model PagedList.IPagedList<Chatbot.Shared.Models.Conversation>
 @using Keboola.Bot.Editor.Extensions
 @using PagedList.Mvc;
 
@@ -37,13 +37,13 @@
                 @Html.DisplayFor(modelItem => item.BaseUri)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.User.UserChannel.Name)
+                @Html.DisplayFor(modelItem => item.User.UserChannel.FriendlyName)
             </td>
             <td>
                 @Html.NewLine2Br(item.StoryShort)
             </td>
             <td>
-                @Html.ActionLink("Details", "Details", new {id = item.ConversationID})
+                @Html.ActionLink("Details", "Index", new {id = item.ConversationID})
             </td>
         </tr>
     }

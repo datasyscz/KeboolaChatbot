@@ -1,14 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Chatbot.Shared.Models;
+using Keboola.Bot;
+using Keboola.Shared;
+using Keboola.Shared.Models;
+using Microsoft.Bot.Connector;
 
 namespace Tests
 {
+    public class TestDatabaseContext : IDatabaseContext
+    {
+        public DbSet<Message> Messages { get; set; }
+
+        public DbSet<ConversationExt> Conversation { get; set; }
+
+        public DbSet<UserExt> Customer { get; set; }
+
+        public DbSet<Channel> Channel { get; set; }
+
+        public DbSet<IntentAnswer> IntentAnswer { get; set; }
+
+        public DbSet<KeboolaToken> KeboolaToken { get; set; }
+
+        public DbSet<KeboolaUser> KeboolaUser { get; set; }
+
+
+        public int SaveChanges()
+        {
+            return 0;
+        }
+
+        public void MarkAsModified<T>(T item) where T : class
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+        }
+
+        public Task<int> SaveChangesAsync()
+        {
+            return Task.FromResult(0);
+        }
+
+        public Task<ConversationExt> FindConversation(IMessageActivity activity)
+        {
+            return null;
+        }
+
+        public void MarkAsModified(KeboolaUser item)
+        {
+        }
+    }
+
     internal class TestDbAsyncQueryProvider<TEntity> : IDbAsyncQueryProvider
     {
         private readonly IQueryProvider _inner;
@@ -53,11 +104,13 @@ namespace Tests
     {
         public TestDbAsyncEnumerable(IEnumerable<T> enumerable)
             : base(enumerable)
-        { }
+        {
+        }
 
         public TestDbAsyncEnumerable(Expression expression)
             : base(expression)
-        { }
+        {
+        }
 
         public IDbAsyncEnumerator<T> GetAsyncEnumerator()
         {

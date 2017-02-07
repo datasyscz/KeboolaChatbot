@@ -7,7 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Keboola.Bot.Editor.Models;
-using Keboola.Shared;
+
 using PagedList;
 
 namespace Keboola.Bot.Editor.Controllers
@@ -32,7 +32,7 @@ namespace Keboola.Bot.Editor.Controllers
 
             var conversationsSortedQ =
                (from conversation in db.Conversation
-                where conversation.BaseUri != "http://localhost:9000/"
+                where !conversation.BaseUri.Contains("localhost")
                 orderby (from message in conversation.Messages
                          orderby message.Date descending
                          select message.Date).FirstOrDefault()

@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Keboola.Bot.Facebook;
+using Keboola.Bot.Service;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Microsoft.Bot.Builder.Internals.Fibers;
 using Microsoft.Bot.Connector;
@@ -36,11 +36,13 @@ namespace Keboola.Bot
     public class BotToUserDatabaseWriter : IBotToUser
     {
         protected readonly IDatabaseContext _db;
+        protected DatabaseService service;
         private readonly IBotToUser _inner;
 
         public BotToUserDatabaseWriter(IBotToUser inner, IDatabaseContext db)
         {
             _db = db;
+            service = new DatabaseService(db);
             SetField.NotNull(out _inner, nameof(inner), inner);
         }
 
@@ -54,7 +56,7 @@ namespace Keboola.Bot
         {
             await _inner.PostAsync(message, cancellationToken);
             // loging outgoing message
-            ConversationLogger logger = new ConversationLogger(_db);
+            var logger = new ConversationLogger(_db);
             await logger.LogOutgoingMessage(message, cancellationToken);
         }
     }
@@ -68,24 +70,37 @@ namespace Keboola.Bot
         public override async Task PostAsync(IMessageActivity message,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            string intentAnswer;
             if (message.Text != string.Empty)
-                message.Text = await GetIntent(message.Text, cancellationToken);
-            else if (message.Attachments.Count > 0 && message.Attachments[0].Content is HeroCard)
+                message.Text = await GetIntent(message.Text, message);
+            else if ((message.Attachments.Count > 0) && message.Attachments[0].Content is HeroCard)
             {
                 var heroCard = (HeroCard) message.Attachments[0].Content;
-                heroCard.Text = await GetIntent(heroCard.Text, cancellationToken);
+                heroCard.Text = await GetIntent(heroCard.Text, message);
             }
 
             await base.PostAsync(message, cancellationToken);
         }
 
-        private async Task<string> GetIntent(string IntentName, CancellationToken cancellationToken)
+        private async Task<string> GetIntent(string IntentName, IMessageActivity message)
         {
-            var intent = await _db.IntentAnswer.FirstOrDefaultAsync(a => a.Name == IntentName, cancellationToken);
-            if (intent == null)
-                return IntentName;
-            return intent.Answer;
+            string intentText = string.Empty;
+            //If text is ID
+            if (IntentName[0] == '$')
+            {
+                IntentName = IntentName.Remove(0,1); //Remove symbol
+                intentText = await service.GetIntentAsync(IntentName);
+            }
+            else
+                intentText = IntentName;
+
+            intentText = ReplaceVariables(message, intentText);
+            return intentText;
+        }
+
+        private static string ReplaceVariables(IMessageActivity message, string intentText)
+        {
+            intentText = Regex.Replace(intentText, "{{username}}", message.Recipient.Name);
+            return intentText;
         }
     }
 }

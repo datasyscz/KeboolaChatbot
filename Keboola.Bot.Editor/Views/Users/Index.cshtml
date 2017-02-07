@@ -1,0 +1,50 @@
+﻿@model IEnumerable<Keboola.Shared.User>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            ID
+        </th>
+        <th>
+            Username
+        </th>
+        <th>
+            Channel ID
+        </th>
+        <th>
+           Active
+        </th>
+        <th/>
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Id)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UserChannel.FriendlyName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UserChannel.FriendlyName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsActivatedStr)
+        </td>
+        <td>
+            @Html.ActionLink(
+                "Delete",
+                "Delete",
+                new {id = item.Id},
+                new {onclick = "return confirm('Are you sure you wish to delete this article?');"})
+        </td>
+    </tr>
+}
+
+</table>
