@@ -27,9 +27,7 @@ namespace API
             WitModels.Response entities = null;
             var res = await client.GetAsync($"https://api.wit.ai/message?q={message}");
             if (res.IsSuccessStatusCode)
-            {
                 entities = await res.Content.ReadAsAsync<WitModels.Response>();
-            }
             return entities;
         }
     }

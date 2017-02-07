@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
+using log4net;
 using Newtonsoft.Json;
 
 namespace Keboola.Bot.Keboola
@@ -15,8 +17,8 @@ namespace Keboola.Bot.Keboola
     [Serializable]
     public class KeboolaClient : IKeboolaClient
     {
-        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private string baseUrl;
+        private readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly string baseUrl;
 
         public KeboolaClient(string baseUrl)
         {
@@ -26,14 +28,14 @@ namespace Keboola.Bot.Keboola
         public async Task<string> RefreshTokenAsync(string token, int id)
         {
             var baseAddress = new Uri(baseUrl);
-            using (var httpClient = new HttpClient { BaseAddress = baseAddress })
+            using (var httpClient = new HttpClient {BaseAddress = baseAddress})
             {
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("x-storageapi-token", token);
                 using (var content = new StringContent(""))
                 {
                     using (var response = await httpClient.PostAsync($"v2/storage/tokens/{id}/refresh", content))
                     {
-                        string responseData = await response.Content.ReadAsStringAsync();
+                        var responseData = await response.Content.ReadAsStringAsync();
                         try
                         {
                             var obj = JsonConvert.DeserializeObject<Responses.RefreshTokenResponse>(responseData);
@@ -54,13 +56,13 @@ namespace Keboola.Bot.Keboola
         public async Task<Responses.VerifyTokenResponse> VerifyTokenAsync(string token)
         {
             var baseAddress = new Uri(baseUrl);
-            using (var httpClient = new HttpClient { BaseAddress = baseAddress })
+            using (var httpClient = new HttpClient {BaseAddress = baseAddress})
             {
                 httpClient.DefaultRequestHeaders.TryAddWithoutValidation("x-storageapi-token", token);
 
                 using (var response = await httpClient.GetAsync("v2/storage/tokens/verify"))
                 {
-                    string responseData = await response.Content.ReadAsStringAsync();
+                    var responseData = await response.Content.ReadAsStringAsync();
                     try
                     {
                         var obj = JsonConvert.DeserializeObject<Responses.VerifyTokenResponse>(responseData);
@@ -85,7 +87,6 @@ namespace Keboola.Bot.Keboola
         {
             public string id { get; set; }
             public string token { get; set; }
-        
         }
 
         public class VerifyTokenResponse

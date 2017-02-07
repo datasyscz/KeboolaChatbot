@@ -2,7 +2,7 @@ using System.Data.Entity.Migrations;
 
 namespace Keboola.Bot.Migrations
 {
-    public partial class init : DbMigration
+    public class init : DbMigration
     {
         public override void Up()
         {

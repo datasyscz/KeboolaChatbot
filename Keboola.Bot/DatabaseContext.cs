@@ -1,9 +1,7 @@
 using System;
 using System.Data.Entity;
 using System.Threading.Tasks;
-using Keboola.Bot.Service;
 using Chatbot.Shared.Models;
-using Microsoft.Bot.Connector;
 
 namespace Keboola.Bot
 {

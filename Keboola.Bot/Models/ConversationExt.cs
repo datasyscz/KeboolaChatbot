@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Chatbot.Shared.Models;
 
 namespace Keboola.Bot
 {
     [Table("Conversation")]
-    public class ConversationExt : Chatbot.Shared.Models.IConversation<UserExt,Chatbot.Shared.Models.Message>
+    public class ConversationExt : IConversation<UserExt, Message>
     {
-
     }
 }

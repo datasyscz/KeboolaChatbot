@@ -1,44 +1,45 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Data.Entity;
 using System.Data.Entity.Validation;
-using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Configuration;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Keboola.Bot.Service;
+using log4net;
 
 namespace Keboola.Bot.Controllers
 {
     public class StateModel
     {
         /// <summary>
-        /// User is active or inactive
+        ///     User is active or inactive
         /// </summary>
         [Required]
         public bool Active { get; set; }
 
         /// <summary>
-        /// Keboola user token
+        ///     Keboola user token
         /// </summary>
         [Required]
         public string Token { get; set; }
     }
 
     /// <summary>
-    /// State controller manage acces from keboola backend to chatbota backend.
+    ///     State controller manage acces from keboola backend to chatbota backend.
     /// </summary>
     public class StateController : ApiController
     {
-        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private IDatabaseContext db = new DatabaseContext();
-        private DatabaseService service;
+        private readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly IDatabaseContext db = new DatabaseContext();
+        private readonly DatabaseService service;
 
         public StateController()
         {
-            TimeSpan tokenExpirationDays = new TimeSpan(int.Parse(WebConfigurationManager.AppSettings["TokenExpirationDays"]), 0, 0, 0);
+            var tokenExpirationDays = new TimeSpan(
+                int.Parse(WebConfigurationManager.AppSettings["TokenExpirationDays"]), 0, 0, 0);
             DatabaseService.TokenExpiration = tokenExpirationDays;
             service = new DatabaseService(db);
         }
@@ -47,13 +48,12 @@ namespace Keboola.Bot.Controllers
         {
             this.db = db;
             service = new DatabaseService(db);
-            DatabaseService.TokenExpiration = new TimeSpan(tokenExpirationDays, 0, 0, 0); ;
-
+            DatabaseService.TokenExpiration = new TimeSpan(tokenExpirationDays, 0, 0, 0);
+            ;
         }
 
         // POST api/state
         [ResponseType(typeof(void))]
-
         public async Task<IHttpActionResult> Post([FromBody] StateModel state)
         {
             //Validate input
@@ -86,7 +86,7 @@ namespace Keboola.Bot.Controllers
             //Validate input
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            if (String.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))
                 return BadRequest();
             try
             {
@@ -114,7 +114,6 @@ namespace Keboola.Bot.Controllers
         {
             try
             {
-
                 var conversation = await service.GetConversationAsync(keboolaUser);
 
                 if (active)

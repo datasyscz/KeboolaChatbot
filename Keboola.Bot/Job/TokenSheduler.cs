@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Configuration;
 using Keboola.Bot.Keboola;
 using Keboola.Bot.Service;
+using log4net;
 using Quartz;
 
 namespace Keboola.Bot.Job
 {
     public class TokenShedulerJob : IJob
     {
-        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IKeboolaClient _client;
         private readonly IDatabaseContext _context;
-        private int _deadLineDays = 30;
         private readonly DatabaseService _service;
+        private readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private int _deadLineDays = 30;
 
         public TokenShedulerJob()
         {

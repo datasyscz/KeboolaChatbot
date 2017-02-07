@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading.Tasks;
 using API;
+using log4net;
 using Microsoft.Bot.Builder.FormFlow;
 
 namespace Keboola.Bot
 {
     public class Validation
     {
-        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly WitAI witAI;
 
         public Validation(WitAI witAI)
@@ -24,7 +26,7 @@ namespace Keboola.Bot
                 if (witAI != null)
                 {
                     var result = await witAI.Analyze((string) value);
-                    if ((result?.entities?.number != null) && (result?.entities?.number.Length > 0))
+                    if (result?.entities?.number != null && result?.entities?.number.Length > 0)
                         return new ValidateResult
                         {
                             IsValid = true,
@@ -34,7 +36,7 @@ namespace Keboola.Bot
             }
             catch (Exception ex)
             {
-                logger.Error("WitAI",ex);
+                logger.Error("WitAI", ex);
                 Debug.Fail(ex.Message);
             }
 
