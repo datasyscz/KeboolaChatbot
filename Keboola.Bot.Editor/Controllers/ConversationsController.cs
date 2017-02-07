@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Chatbot.Shared.Models;
 using Keboola.Bot.Editor.Models;
 
 using PagedList;
