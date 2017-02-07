@@ -68,8 +68,7 @@ namespace Keboola.Bot.Controllers
                 //Add user
                 var keboolaUser = await service.AddUserAndToken(state);
 
-                if (state.Active)
-                    await SendActivatedMessage(keboolaUser);
+                await SendActivatedMessage(keboolaUser, state.Active);
 
                 return StatusCode(HttpStatusCode.OK);
             }
@@ -100,8 +99,7 @@ namespace Keboola.Bot.Controllers
                 keboolaUser.Active = state.Active;
                 await db.SaveChangesAsync();
 
-                if (state.Active)
-                    await SendActivatedMessage(keboolaUser);
+                await SendActivatedMessage(keboolaUser, state.Active);
 
                 return StatusCode(HttpStatusCode.OK);
             }
@@ -112,12 +110,17 @@ namespace Keboola.Bot.Controllers
             }
         }
 
-        private async Task SendActivatedMessage(KeboolaUser keboolaUser)
+        private async Task SendActivatedMessage(KeboolaUser keboolaUser, bool active)
         {
             try
             {
+
                 var conversation = await service.GetConversationAsync(keboolaUser);
-                conversation.SendMessage("Your account is activated");
+
+                if (active)
+                    conversation.SendMessage("Your account is activated");
+                else
+                    conversation.SendMessage("Your account is deactivated");
             }
             catch (Exception ex)
             {

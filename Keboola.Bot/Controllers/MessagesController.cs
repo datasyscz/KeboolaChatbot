@@ -26,7 +26,7 @@ namespace Keboola.Bot
         public MessagesController()
         {
             //Register own IBotToUser for messages loging
-
+             
             _db = new DatabaseContext();
             service = new DatabaseService(_db);
             var builder = new ContainerBuilder();
