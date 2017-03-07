@@ -15,9 +15,9 @@ namespace Keboola.Bot.Tests
     [TestClass]
     public class RootDialogtest : DialogTestBase
     {
+        private readonly Queue<IMessageActivity> responses = new Queue<IMessageActivity>();
         private IContainer container;
         private Func<IDialog<object>> MakeRoot;
-        private readonly Queue<IMessageActivity> responses = new Queue<IMessageActivity>();
         private IMessageActivity toBot;
 
 
@@ -30,12 +30,12 @@ namespace Keboola.Bot.Tests
 
         private async Task GetResponses()
         {
-            var responsese = await GetResponse(container, MakeRoot, toBot);
+            var responsese = await GetResponse(null, MakeRoot, toBot);
             foreach (var messageActivity in responsese)
                 responses.Enqueue(messageActivity);
         }
 
-        public async Task<bool> FromBot(string text)
+        public bool FromBot(string text)
         {
             var msg = responses.Dequeue();
             if (msg.Attachments.Count > 0)
