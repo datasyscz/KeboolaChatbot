@@ -272,7 +272,7 @@ namespace Keboola.Bot.Editor.Controllers
                 AuthenticationManager.GetExternalAuthenticationTypes()
                     .Where(auth => userLogins.All(ul => auth.AuthenticationType != ul.LoginProvider))
                     .ToList();
-            ViewBag.ShowRemoveButton = (user.PasswordHash != null) || (userLogins.Count > 1);
+            ViewBag.ShowRemoveButton = user.PasswordHash != null || userLogins.Count > 1;
             return View(new ManageLoginsViewModel
             {
                 CurrentLogins = userLogins,
@@ -306,7 +306,7 @@ namespace Keboola.Bot.Editor.Controllers
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (_userManager != null))
+            if (disposing && _userManager != null)
             {
                 _userManager.Dispose();
                 _userManager = null;

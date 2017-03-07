@@ -1,7 +1,6 @@
-﻿
-@model PagedList.IPagedList<Chatbot.Shared.Models.Conversation>
-@using Keboola.Bot.Editor.Extensions
-@using PagedList.Mvc;
+﻿@using Keboola.Bot.Editor.Extensions
+@using PagedList.Mvc
+@model PagedList.IPagedList<Keboola.Bot.Editor.Models.ConversationExt>
 
 @{
     ViewBag.Title = "Index";
@@ -43,7 +42,7 @@
                 @Html.NewLine2Br(item.StoryShort)
             </td>
             <td>
-                @Html.ActionLink("Details", "Index", new {id = item.ConversationID})
+                @Html.ActionLink("Details", "Details", new {id = item.ConversationID})
             </td>
         </tr>
     }
@@ -52,4 +51,4 @@
 Stránka @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) z @Model.PageCount
 
 @Html.PagedListPager(Model, page => Url.Action("Index",
-    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+    new {page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter}))

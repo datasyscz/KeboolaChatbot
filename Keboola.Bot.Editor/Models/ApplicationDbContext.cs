@@ -1,10 +1,9 @@
 ﻿using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Chatbot.Shared.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-
-using Chatbot.Shared.Models;
 
 namespace Keboola.Bot.Editor.Models
 {
@@ -22,16 +21,16 @@ namespace Keboola.Bot.Editor.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public DbSet<Message> Messages { get; set; }
-        public DbSet<Conversation> Conversation { get; set; }
-        public DbSet<User> Customer { get; set; }
-        public DbSet<Channel> Channel { get; set; }
-        public DbSet<IntentAnswer> IntentAnswer { get; set; }
-
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base("DefaultConnection", false)
         {
         }
+
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<ConversationExt> Conversation { get; set; }
+        public DbSet<UserExt> Customer { get; set; }
+        public DbSet<Channel> Channel { get; set; }
+        public DbSet<IntentAnswer> IntentAnswer { get; set; }
 
         public static ApplicationDbContext Create()
         {
