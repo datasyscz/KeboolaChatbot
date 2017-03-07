@@ -29,6 +29,7 @@ namespace Keboola.Bot
             //Register own IBotToUser for messages loging
 
             _db = new DatabaseContext();
+
             service = new DatabaseService(_db);
             var builder = new ContainerBuilder();
             builder.RegisterType<BotToUserLogger>()
@@ -50,8 +51,6 @@ namespace Keboola.Bot
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody] Activity activity)
         {
-            //   Logger.Log.Error("foooo");
-
             if (activity.Type == ActivityTypes.Message || activity.Type == ActivityTypes.ContactRelationUpdate ||
                 activity.Type == ActivityTypes.ConversationUpdate)
             {
@@ -134,33 +133,22 @@ namespace Keboola.Bot
         private async Task<ConversationExt> LogMessage(Activity activity)
         {
             //Log incoming message
-            var logger = new ConversationLogger(_db);
-            var conversationLog = await logger.AddOrUpdateConversation(activity);
+            var conLogger = new ConversationLogger(_db);
+            var conversationLog = await conLogger.AddOrUpdateConversationAsync(activity);
 
             if (activity.ChannelData != null)
             {
                 //Add token from keboola
                 var obj = (JObject) activity.ChannelData;
-                var eee = activity.ChannelData.GetType();
-                var ssd = obj["optin"];
                 if (obj["optin"] != null)
                     if (conversationLog.User.KeboolaUser == null)
-                    {
                         conversationLog.User.KeboolaUser = new KeboolaUser
                         {
-                            Active = true,
-                            Token = new KeboolaToken
-                            {
-                                Value = obj["optin"]["ref"].ToString(),
-                                Expiration = DateTime.Now + TimeSpan.FromDays(29)
-                            }
+                            KeboolaId = int.Parse(obj["optin"]["ref"].ToString()),
+                            Active = true
                         };
-                    }
                     else
-                    {
-                        var updated = await service.UpdateToken(conversationLog.User.KeboolaUser,
-                            obj["optin"]["ref"].ToString());
-                    }
+                        conversationLog.User.KeboolaUser.Active = true;
             }
 
             conversationLog.AddMessage(activity, true);
