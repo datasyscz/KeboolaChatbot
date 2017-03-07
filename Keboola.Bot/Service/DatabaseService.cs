@@ -28,6 +28,16 @@ namespace Keboola.Bot.Service
             return await _context.KeboolaUser.AnyAsync(a => a.Token.Value == token);
         }
 
+        public async Task<bool> KeboolaUserExist(int id)
+        {
+            return await _context.KeboolaUser.AnyAsync(a => a.KeboolaId == id);
+        }
+
+        public async Task<KeboolaUser> KeboolaUserFind(int? id)
+        {
+            return await _context.KeboolaUser.FirstOrDefaultAsync(a => a.KeboolaId == id);
+        }
+
         public async Task<bool> UserIsAtivated(string token)
         {
             return await _context.KeboolaUser.AnyAsync(a => a.Token.Value == token && a.Active);
@@ -64,11 +74,11 @@ namespace Keboola.Bot.Service
                 Expiration = DateTime.Now + TokenExpiration
             };
 
-            //newToken = _context.KeboolaToken.Attach(newToken);
             var newUser = new KeboolaUser
             {
                 Token = newToken,
-                Active = state.Active
+                Active = state.Active == true,
+                KeboolaId = (int) state.Id
             };
 
             //Add new user
@@ -80,6 +90,11 @@ namespace Keboola.Bot.Service
         public async Task<KeboolaUser> GetKeboolaUserByTokenAsync(string token)
         {
             return await _context.KeboolaUser.FirstOrDefaultAsync(a => a.Token.Value == token);
+        }
+
+        public async Task<KeboolaUser> GetKeboolaUserByIdAsync(int id)
+        {
+            return await _context.KeboolaUser.FirstOrDefaultAsync(a => a.KeboolaId == id);
         }
 
         public List<KeboolaUser> GetExpiredUsersTokens()
@@ -117,12 +132,14 @@ namespace Keboola.Bot.Service
 
         public async Task<UserExt> GetUserAsync(KeboolaUser keboolaUser)
         {
-            return await _context.Customer.FirstOrDefaultAsync(a => a.KeboolaUser.Id == keboolaUser.Id);
+            return await _context.Customer.FirstOrDefaultAsync(a => a.KeboolaUser.KeboolaId == keboolaUser.KeboolaId);
         }
 
         public async Task<ConversationExt> GetConversationAsync(KeboolaUser keboolaUser)
         {
-            return await _context.Conversation.Where(a => a.User.KeboolaUser.Id == keboolaUser.Id).FirstOrDefaultAsync();
+            return
+                await _context.Conversation.Where(a => a.User.KeboolaUser.KeboolaId == keboolaUser.KeboolaId)
+                    .FirstOrDefaultAsync();
         }
     }
 }

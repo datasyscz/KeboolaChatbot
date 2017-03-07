@@ -15,8 +15,8 @@ namespace Keboola.Bot.Job
         private readonly IKeboolaClient _client;
         private readonly IDatabaseContext _context;
         private readonly DatabaseService _service;
-        private readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private int _deadLineDays = 30;
+        public readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly int _deadLineDays = 30;
 
         public TokenShedulerJob()
         {
@@ -39,21 +39,36 @@ namespace Keboola.Bot.Job
             foreach (var keboolaUser in needRefresh)
                 try
                 {
-                    var verifyResponse = Task.Run(() => _client.VerifyTokenAsync(keboolaUser.Token.Value)).Result;
-                    if (verifyResponse != null)
-                    {
-                        var newToken =
-                            Task.Run(() => _client.RefreshTokenAsync(verifyResponse.token, int.Parse(verifyResponse.id)))
-                                .Result;
-                        keboolaUser.Token.Value = newToken;
-                    }
+                    RefreshToken(keboolaUser);
                 }
                 catch (Exception ex)
                 {
                     logger.Error(ex);
+                    try
+                    {
+                        RefreshToken(keboolaUser);
+                    }
+                    catch (Exception ex2)
+                    {
+                        logger.Error("Cant refresh token.", ex2);
+                        Debug.Fail(ex2.Message);
+                    }
                     Debug.Fail(ex.Message);
                 }
-            _context.SaveChanges();
+        }
+
+        private void RefreshToken(KeboolaUser keboolaUser)
+        {
+            var verifyResponse = Task.Run(() => _client.VerifyTokenAsync(keboolaUser.Token.Value)).Result;
+            if (verifyResponse != null)
+            {
+                var newToken =
+                    Task.Run(() => _client.RefreshTokenAsync(verifyResponse.token, int.Parse(verifyResponse.id)))
+                        .Result;
+                keboolaUser.Token.Value = newToken;
+                keboolaUser.Token.Expiration = DateTime.Now.AddDays(_deadLineDays - 1);
+                _context.SaveChanges();
+            }
         }
     }
 }

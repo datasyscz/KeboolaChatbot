@@ -29,7 +29,7 @@ namespace Keboola.Bot
         /// <param name="activity">Incoming message</param>
         /// <param name="db"></param>
         /// <returns></returns>
-        public async Task<ConversationExt> AddOrUpdateConversation(IMessageActivity activity)
+        public async Task<ConversationExt> AddOrUpdateConversationAsync(IMessageActivity activity)
         {
             //Find conversation
             var conversation = await service.FindConversationAsync(activity);

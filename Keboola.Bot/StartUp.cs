@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using log4net;
 using log4net.Config;
 using Owin;
@@ -14,14 +13,6 @@ namespace Keboola.Bot
 
         public void Configuration(IAppBuilder app)
         {
-            try
-            {
-                throw new Exception("It's Working");
-            }
-            catch (Exception ex)
-            {
-                logger.Error("Test");
-            }
         }
     }
 }

@@ -3,7 +3,7 @@ using Chatbot.Shared.Models;
 
 namespace Keboola.Bot
 {
-    [Table("Conversation")]
+    [Table("Conversations")]
     public class ConversationExt : IConversation<UserExt, Message>
     {
     }

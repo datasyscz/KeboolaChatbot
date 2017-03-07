@@ -3,7 +3,7 @@ using Chatbot.Shared.Models;
 
 namespace Keboola.Bot
 {
-    [Table("User")]
+    [Table("Users")]
     public class UserExt : User
     {
         public virtual KeboolaUser KeboolaUser { get; set; }

@@ -17,8 +17,8 @@ namespace Keboola.Bot.Keboola
     [Serializable]
     public class KeboolaClient : IKeboolaClient
     {
-        private readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly string baseUrl;
+        private readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public KeboolaClient(string baseUrl)
         {

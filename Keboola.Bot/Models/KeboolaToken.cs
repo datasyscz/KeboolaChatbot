@@ -14,5 +14,7 @@ namespace Keboola.Bot
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime Expiration { get; set; }
+
+        public bool Enabled { get; set; }
     }
 }
