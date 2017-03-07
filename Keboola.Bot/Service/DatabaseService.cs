@@ -1,24 +1,22 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
 using Keboola.Bot.Controllers;
+using log4net;
 using Microsoft.Bot.Connector;
-using Newtonsoft.Json.Linq;
-using Chatbot.Shared.Models;
 
 namespace Keboola.Bot.Service
 {
     [Serializable]
     public class DatabaseService
     {
-        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static IDatabaseContext _context;
-        public static TimeSpan TokenExpiration = new TimeSpan(30,0,0);
+        public static TimeSpan TokenExpiration = new TimeSpan(30, 0, 0);
+        private readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public DatabaseService(IDatabaseContext context)
         {
@@ -30,13 +28,23 @@ namespace Keboola.Bot.Service
             return await _context.KeboolaUser.AnyAsync(a => a.Token.Value == token);
         }
 
+        public async Task<bool> KeboolaUserExist(int id)
+        {
+            return await _context.KeboolaUser.AnyAsync(a => a.KeboolaId == id);
+        }
+
+        public async Task<KeboolaUser> KeboolaUserFind(int? id)
+        {
+            return await _context.KeboolaUser.FirstOrDefaultAsync(a => a.KeboolaId == id);
+        }
+
         public async Task<bool> UserIsAtivated(string token)
         {
             return await _context.KeboolaUser.AnyAsync(a => a.Token.Value == token && a.Active);
         }
 
         public async Task<ConversationExt> FindConversationAsync(
-           IMessageActivity activity)
+            IMessageActivity activity)
         {
             try
             {
@@ -44,9 +52,9 @@ namespace Keboola.Bot.Service
                     await _context.Conversation
                         .FirstOrDefaultAsync(
                             a =>
-                                (a.FrameworkId == activity.Conversation.Id)
+                                a.FrameworkId == activity.Conversation.Id
                                 &&
-                                (a.BaseUri == activity.ServiceUrl)
+                                a.BaseUri == activity.ServiceUrl
                             //Need check service url too, ConversationID is unique only for serviceUrl 
                         );
             }
@@ -60,17 +68,17 @@ namespace Keboola.Bot.Service
 
         public async Task<KeboolaUser> AddUserAndToken(StateModel state)
         {
-            KeboolaToken newToken = new KeboolaToken()
+            var newToken = new KeboolaToken
             {
                 Value = state.Token,
                 Expiration = DateTime.Now + TokenExpiration
             };
 
-            //newToken = _context.KeboolaToken.Attach(newToken);
-            KeboolaUser newUser = new KeboolaUser()
+            var newUser = new KeboolaUser
             {
                 Token = newToken,
-                Active = state.Active
+                Active = state.Active == true,
+                KeboolaId = (int) state.Id
             };
 
             //Add new user
@@ -84,10 +92,17 @@ namespace Keboola.Bot.Service
             return await _context.KeboolaUser.FirstOrDefaultAsync(a => a.Token.Value == token);
         }
 
+        public async Task<KeboolaUser> GetKeboolaUserByIdAsync(int id)
+        {
+            return await _context.KeboolaUser.FirstOrDefaultAsync(a => a.KeboolaId == id);
+        }
+
         public List<KeboolaUser> GetExpiredUsersTokens()
         {
-            DateTime now = DateTime.Now;
-            return _context.KeboolaUser.Where(o => EntityFunctions.TruncateTime(o.Token.Expiration) <= now && o.Active).ToList();
+            var now = DateTime.Now;
+            return
+                _context.KeboolaUser.Where(o => EntityFunctions.TruncateTime(o.Token.Expiration) <= now && o.Active)
+                    .ToList();
         }
 
         public async Task<string> GetIntentAsync(string id)
@@ -101,30 +116,30 @@ namespace Keboola.Bot.Service
         public async Task<bool> UpdateToken(KeboolaUser user, string token)
         {
             if (user.Token.Value != token)
-            {
-                if (!(await TokenExistAsync(token)))
+                if (!await TokenExistAsync(token))
                 {
                     var oldToke = user.Token;
                     user.InactiveTokens.Add(oldToke);
-                    user.Token = new KeboolaToken()
+                    user.Token = new KeboolaToken
                     {
                         Expiration = DateTime.Now + TokenExpiration,
                         Value = token
                     };
                     return true;
                 }
-            }
             return false;
         }
 
         public async Task<UserExt> GetUserAsync(KeboolaUser keboolaUser)
         {
-           return await _context.Customer.FirstOrDefaultAsync(a => a.KeboolaUser.Id == keboolaUser.Id);
+            return await _context.Customer.FirstOrDefaultAsync(a => a.KeboolaUser.KeboolaId == keboolaUser.KeboolaId);
         }
 
         public async Task<ConversationExt> GetConversationAsync(KeboolaUser keboolaUser)
         {
-            return await _context.Conversation.Where(a => a.User.KeboolaUser.Id == keboolaUser.Id).FirstOrDefaultAsync();
+            return
+                await _context.Conversation.Where(a => a.User.KeboolaUser.KeboolaId == keboolaUser.KeboolaId)
+                    .FirstOrDefaultAsync();
         }
     }
 }

@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http.Results;
 using Keboola.Bot;
 using Keboola.Bot.Controllers;
-using Keboola.Shared;
+using Keboola.Bot.Service;
 using Keboola.Shared.Models;
-using Microsoft.IdentityModel.Protocols;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Telerik.JustMock.EntityFramework;
-using Keboola.Bot.Service;
 
 namespace Tests
 {
@@ -25,40 +20,42 @@ namespace Tests
         [TestMethod]
         public async Task TestPostAddNewState()
         {
-            StateModel model = new StateModel()
+            var model = new StateModel
             {
                 Active = true,
-                Token = "sa54d6+5GHs4d65"
+                Token = "sa54d6+5GHs4d65",
+                Id = 5
             };
 
             var dbContext = new Mock<IDatabaseContext>();
             var service = FakeDbContext.GetService(dbContext);
             var controller = new StateController(dbContext.Object);
 
-            var result =await controller.Post(model);
+            var result = await controller.Post(model);
             var ress = result as StatusCodeResult;
-            Assert.AreEqual(dbContext.Object.KeboolaUser.Count(),1);
+            Assert.AreEqual(dbContext.Object.KeboolaUser.Count(), 1);
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(StatusCodeResult));
             Assert.AreEqual(HttpStatusCode.OK, ress.StatusCode);
             var savedUse = dbContext.Object.KeboolaUser.FirstOrDefault(a => a.Token.Value == model.Token);
             Assert.IsNotNull(savedUse);
             Assert.AreEqual(savedUse.Token.Value, model.Token);
+            Assert.AreEqual(savedUse.KeboolaId, model.Id);
             Assert.IsTrue(savedUse.Active);
         }
 
         [TestMethod]
         public async Task TestPostConflictState()
         {
-            StateModel model = GenerateRandomModel();
+            var model = GenerateRandomModel();
 
             var dbContext = EntityFrameworkMock.Create<DatabaseContext>();
             var service = new DatabaseService(dbContext);
             var controller = new StateController(dbContext);
 
             await controller.Post(model);
-            for (int i = 0; i < 100; i++)
-                await controller.Post(GenerateRandomModel());
+            for (var i = 0; i < 100; i++)
+                await controller.Post(GenerateRandomModel(i));
 
             var result = await controller.Post(model) as StatusCodeResult;
             Assert.AreEqual(HttpStatusCode.Conflict, result.StatusCode);
@@ -67,9 +64,36 @@ namespace Tests
         }
 
         [TestMethod]
+        public async Task TestPostConflictSameIdDifferentTokenState()
+        {
+            var model = GenerateRandomModel();
+
+            var dbContext = EntityFrameworkMock.Create<DatabaseContext>();
+            var service = new DatabaseService(dbContext);
+            var controller = new StateController(dbContext);
+
+            await controller.Post(model);
+            for (var i = 1; i < 100; i++)
+                await controller.Post(GenerateRandomModel(i));
+
+            var oldToken = model.Token;
+            model.Token = "DifferentToken";
+            var result = await controller.Post(model) as StatusCodeResult;
+            Assert.AreEqual(HttpStatusCode.Conflict, result.StatusCode);
+            var savedUse = dbContext.KeboolaUser.Count(a => a.Token.Value == oldToken);
+            Assert.AreEqual(savedUse, 1);
+
+            var anyNewRecord = dbContext.KeboolaUser.Any(a => a.Token.Value == model.Token);
+            Assert.IsFalse(anyNewRecord);
+
+            var numberIdRecords = dbContext.KeboolaUser.Count(a => a.KeboolaId == model.Id);
+            Assert.AreEqual(numberIdRecords, 1);
+        }
+
+        [TestMethod]
         public async Task TestPutState()
         {
-            StateModel model = GenerateRandomModel();
+            var model = GenerateRandomModel();
             model.Active = true;
             //  var dbContext = new Mock<IDatabaseContext>();
             var dbContext = EntityFrameworkMock.Create<DatabaseContext>();
@@ -78,36 +102,38 @@ namespace Tests
             var controller = new StateController(dbContext);
 
 
-
             await controller.Post(model);
             var changedUser = dbContext.KeboolaUser.FirstOrDefault(a => a.Token.Value == model.Token);
             Assert.IsTrue(changedUser.Active);
-            string token = model.Token;
-            model.Token = null;
+            var id = 0;
+            var newToken = model.Token;
+            model.Token = model.Token;
             model.Active = false;
-            var result2 = await controller.Put(token, model) as StatusCodeResult;
+            var result2 = await controller.Put(id, model) as StatusCodeResult;
             Assert.AreEqual(HttpStatusCode.OK, result2.StatusCode);
-            changedUser = dbContext.KeboolaUser.FirstOrDefault(a => a.Token.Value == token);
+            changedUser = dbContext.KeboolaUser.FirstOrDefault(a => a.KeboolaId == id);
             Assert.IsFalse(changedUser.Active);
         }
 
         [TestMethod]
         public async Task TestPutExpiredState()
         {
-            StateModel model = GenerateRandomModel();
+            var model = GenerateRandomModel(1);
             model.Active = true;
             StateController controller;
-            var dbContext = FillRandomData(out controller);
+            var dbContext = await FillRandomData();
+            controller = new StateController(dbContext);
+
             await controller.Post(model);
             //Fake expiration
-            var user = await dbContext.Object.KeboolaUser.FirstOrDefaultAsync(a => a.Token.Value == model.Token);
-            user.Token.Expiration = DateTime.Now - new TimeSpan(40,0,0,0);
-            
+            var user = await dbContext.KeboolaUser.FirstOrDefaultAsync(a => a.Token.Value == model.Token);
+            user.Token.Expiration = DateTime.Now - new TimeSpan(40, 0, 0, 0);
+
             model.Active = false;
-            var result =await controller.Put(model.Token, model) as StatusCodeResult;
+            var result = await controller.Put((int) model.Id, model) as StatusCodeResult;
 
             Assert.AreEqual(HttpStatusCode.NotFound, result.StatusCode);
-            var unchangedState = dbContext.Object.KeboolaUser.FirstOrDefault(a => a.Token.Value == model.Token);
+            var unchangedState = dbContext.KeboolaUser.FirstOrDefault(a => a.Token.Value == model.Token);
             Assert.IsTrue(unchangedState.Active);
         }
 
@@ -115,39 +141,42 @@ namespace Tests
         public async Task TestPutDoesntExist()
         {
             StateController controller;
-            var dbContext = FillRandomData(out controller);
+            var dbContext = await FillRandomData(1);
+            controller = new StateController(dbContext);
 
-            StateModel model = GenerateRandomModel();
-            var result2 =await controller.Put(model.Token, model) as StatusCodeResult;
+            var model = GenerateRandomModel(65544);
+            var result2 = await controller.Put((int) model.Id, model) as StatusCodeResult;
             Assert.AreEqual(HttpStatusCode.NotFound, result2.StatusCode);
-            var nullToken = dbContext.Object.KeboolaUser.FirstOrDefault(a => a.Token.Value == model.Token);
+            var nullToken = dbContext.KeboolaUser.FirstOrDefault(a => a.Token.Value == model.Token);
             Assert.IsNull(nullToken);
         }
 
-        private Mock<IDatabaseContext> FillRandomData(out StateController controller)
+        private async Task<DatabaseContext> FillRandomData(int startId = 0)
         {
-            var dbContext = new Mock<IDatabaseContext>();
-            var service = FakeDbContext.GetService(dbContext);
-            controller = new StateController(dbContext.Object);
-            for (int i = 0; i < 100; i++)
-                controller.Post(GenerateRandomModel());
+            var dbContext = EntityFrameworkMock.Create<DatabaseContext>();
+            //     var dbContext = new Mock<IDatabaseContext>();
+            //   var service = FakeDbContext.GetService(dbContext);
+            var controller = new StateController(dbContext);
+            for (var i = startId; i < 100; i++)
+                await controller.Post(GenerateRandomModel());
             return dbContext;
         }
 
         [TestMethod]
         public async Task TestPostAddNewStateTwice()
         {
-            StateModel model = new StateModel()
+            var model = new StateModel
             {
                 Active = true,
-                Token = "sa54d6+5ADs4d65"
+                Token = "sa54d6+5ADs4d65",
+                Id = 6006
             };
 
             var dbContext = EntityFrameworkMock.Create<DatabaseContext>();
             var service = new DatabaseService(dbContext);
             var realContext = dbContext;
             var controller = new StateController(realContext);
-          
+
             await controller.Post(model);
 
             var result = await controller.Post(model);
@@ -164,28 +193,29 @@ namespace Tests
             var service = FakeDbContext.GetService(dbContext);
             var controller = new StateController(dbContext.Object);
 
-
-            for (int i = 0; i < 20; i++)
+            for (var i = 0; i < 20; i++)
             {
-                StateModel model = GenerateRandomModel();
+                var model = GenerateRandomModel(i);
                 var result = await controller.Post(model) as StatusCodeResult;
-                Assert.AreEqual(dbContext.Object.KeboolaUser.Count(), i+1);
+                Assert.AreEqual(dbContext.Object.KeboolaUser.Count(), i + 1);
                 Assert.IsNotNull(result);
                 Assert.IsInstanceOfType(result, typeof(StatusCodeResult));
                 Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
                 var savedUse = dbContext.Object.KeboolaUser.FirstOrDefault(a => a.Token.Value == model.Token);
                 Assert.IsNotNull(savedUse);
                 Assert.AreEqual(savedUse.Token.Value, model.Token);
+                Assert.AreEqual(savedUse.KeboolaId, model.Id);
                 Assert.IsTrue(savedUse.Active == model.Active);
             }
         }
 
-        public StateModel GenerateRandomModel()
+        public StateModel GenerateRandomModel(int id = 0)
         {
-            return new StateModel()
+            return new StateModel
             {
-                Active = (new Random()).Next(0,1) == 1,
-                Token = Guid.NewGuid().ToString()
+                Active = new Random().Next(0, 1) == 1,
+                Token = Guid.NewGuid().ToString(),
+                Id = id
             };
         }
     }

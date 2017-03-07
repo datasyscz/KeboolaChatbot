@@ -166,6 +166,7 @@
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.20622.1351, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.2.206221351\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
       <Private>True</Private>
@@ -190,6 +191,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
       <Private>True</Private>
@@ -224,6 +229,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\flow.png" />
@@ -250,48 +256,18 @@
     <Compile Include="Dialogs\IntroDialog.cs" />
     <Compile Include="Dialogs\RedirectHeroCard.cs" />
     <Compile Include="Dialogs\RootDialog.cs" />
+    <Compile Include="Encrypt\StringCipher.cs" />
     <Compile Include="Facebook\SendMessageToUsModel.cs" />
     <Compile Include="Facebook\WebView.cs" />
+    <Compile Include="Filters\ApiKeyFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Job\TokenSheduler.cs" />
     <Compile Include="Keboola\Token.cs" />
-    <Compile Include="Migrations\201611081323470_init.cs" />
-    <Compile Include="Migrations\201611081323470_init.Designer.cs">
-      <DependentUpon>201611081323470_init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201612151057350_addKeboolaUser.cs" />
-    <Compile Include="Migrations\201612151057350_addKeboolaUser.Designer.cs">
-      <DependentUpon>201612151057350_addKeboolaUser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201612190848038_addKeboolauserFix.cs" />
-    <Compile Include="Migrations\201612190848038_addKeboolauserFix.Designer.cs">
-      <DependentUpon>201612190848038_addKeboolauserFix.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201612211131491_requaredtoken.cs" />
-    <Compile Include="Migrations\201612211131491_requaredtoken.Designer.cs">
-      <DependentUpon>201612211131491_requaredtoken.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201701031328234_removeConversationIDToUser.cs" />
-    <Compile Include="Migrations\201701031328234_removeConversationIDToUser.Designer.cs">
-      <DependentUpon>201701031328234_removeConversationIDToUser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201701031341287_fidDB.cs" />
-    <Compile Include="Migrations\201701031341287_fidDB.Designer.cs">
-      <DependentUpon>201701031341287_fidDB.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201701311559042_sdsad.cs" />
-    <Compile Include="Migrations\201701311559042_sdsad.Designer.cs">
-      <DependentUpon>201701311559042_sdsad.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201702021242421_renameTable.cs" />
-    <Compile Include="Migrations\201702021242421_renameTable.Designer.cs">
-      <DependentUpon>201702021242421_renameTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201702061452232_fix.cs" />
-    <Compile Include="Migrations\201702061452232_fix.Designer.cs">
-      <DependentUpon>201702061452232_fix.cs</DependentUpon>
+    <Compile Include="Migrations\201703071048491_initial.cs" />
+    <Compile Include="Migrations\201703071048491_initial.Designer.cs">
+      <DependentUpon>201703071048491_initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ConversationExt.cs" />
@@ -339,37 +315,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201611081323470_init.resx">
-      <DependentUpon>201611081323470_init.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201612151057350_addKeboolaUser.resx">
-      <DependentUpon>201612151057350_addKeboolaUser.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201612190848038_addKeboolauserFix.resx">
-      <DependentUpon>201612190848038_addKeboolauserFix.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201612211131491_requaredtoken.resx">
-      <DependentUpon>201612211131491_requaredtoken.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201701031328234_removeConversationIDToUser.resx">
-      <DependentUpon>201701031328234_removeConversationIDToUser.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201701031341287_fidDB.resx">
-      <DependentUpon>201701031341287_fidDB.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201701311559042_sdsad.resx">
-      <DependentUpon>201701311559042_sdsad.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201702021242421_renameTable.resx">
-      <DependentUpon>201702021242421_renameTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201702061452232_fix.resx">
-      <DependentUpon>201702061452232_fix.cs</DependentUpon>
-    </EmbeddedResource>
+    <Folder Include="Providers\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Providers\" />
+    <EmbeddedResource Include="Migrations\201703071048491_initial.resx">
+      <DependentUpon>201703071048491_initial.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

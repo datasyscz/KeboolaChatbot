@@ -2,10 +2,9 @@
 using System.Data.Entity;
 using System.Threading;
 using System.Threading.Tasks;
+using Chatbot.Shared.Models;
 using Keboola.Bot.Service;
 using Microsoft.Bot.Connector;
-using Newtonsoft.Json;
-using Chatbot.Shared.Models;
 
 namespace Keboola.Bot
 {
@@ -16,12 +15,12 @@ namespace Keboola.Bot
     public class ConversationLogger
     {
         private readonly IDatabaseContext _db;
-        private DatabaseService service;
+        private readonly DatabaseService service;
 
         public ConversationLogger(IDatabaseContext db)
         {
             _db = db;
-            service  =new DatabaseService(_db);
+            service = new DatabaseService(_db);
         }
 
         /// <summary>
@@ -30,7 +29,7 @@ namespace Keboola.Bot
         /// <param name="activity">Incoming message</param>
         /// <param name="db"></param>
         /// <returns></returns>
-        public async Task<ConversationExt> AddOrUpdateConversation(IMessageActivity activity)
+        public async Task<ConversationExt> AddOrUpdateConversationAsync(IMessageActivity activity)
         {
             //Find conversation
             var conversation = await service.FindConversationAsync(activity);
@@ -38,7 +37,7 @@ namespace Keboola.Bot
             {
                 conversation = new ConversationExt
                 {
-                    User = new UserExt() { date = DateTime.Now },
+                    User = new UserExt {date = DateTime.Now},
                     Name = activity.Conversation.Name,
                     FrameworkId = activity.Conversation.Id,
                     BaseUri = activity.ServiceUrl
@@ -47,7 +46,7 @@ namespace Keboola.Bot
                 var botChannel =
                     await
                         _db.Channel.FirstOrDefaultAsync(
-                            a => (a.FrameworkId == activity.Recipient.Id) && (a.Name == activity.Recipient.Name));
+                            a => a.FrameworkId == activity.Recipient.Id && a.Name == activity.Recipient.Name);
                 if (botChannel == null)
                     conversation.User.BotChannel = new Channel
                     {
@@ -61,7 +60,7 @@ namespace Keboola.Bot
                 var userChannel =
                     await
                         _db.Channel.FirstOrDefaultAsync(
-                            a => (a.FrameworkId == activity.From.Id) && (a.Name == activity.From.Name));
+                            a => a.FrameworkId == activity.From.Id && a.Name == activity.From.Name);
                 if (userChannel == null)
                     conversation.User.UserChannel = new Channel
                     {

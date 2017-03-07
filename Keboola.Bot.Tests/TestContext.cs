@@ -8,8 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Chatbot.Shared.Models;
 using Keboola.Bot;
-using Keboola.Shared;
-using Keboola.Shared.Models;
 using Microsoft.Bot.Connector;
 
 namespace Tests

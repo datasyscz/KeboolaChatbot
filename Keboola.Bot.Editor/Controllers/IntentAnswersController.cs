@@ -2,8 +2,8 @@
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Keboola.Bot.Editor.Models;
 using Chatbot.Shared.Models;
+using Keboola.Bot.Editor.Models;
 
 namespace Keboola.Bot.Editor.Controllers
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Keboola.Bot
+namespace Keboola.Bot.Editor.Models
 {
     [Serializable]
     public class KeboolaUser

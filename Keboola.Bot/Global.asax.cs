@@ -1,11 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Web;
 using System.Web.Http;
-using System.Web.Mvc;
-using System.Web.Routing;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-
+using log4net.Config;
 
 namespace Keboola.Bot
 {
@@ -13,9 +10,11 @@ namespace Keboola.Bot
     {
         protected void Application_Start()
         {
-        //    AreaRegistration.RegisterAllAreas();
+            //    AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
-            log4net.Config.XmlConfigurator.Configure(new FileInfo(Server.MapPath("~/Web.config")));
+            XmlConfigurator.Configure(new FileInfo(Server.MapPath("~/Web.config")));
+
+            //  GlobalConfiguration.Configuration.MessageHandlers.Add(new APIKeyHandler());
             //   XmlConfigurator.Configure(new FileInfo(Server.MapPath("~/Web.config")));
             //FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             //RouteConfig.RegisterRoutes(RouteTable.Routes);
@@ -26,6 +25,14 @@ namespace Keboola.Bot
             //var settings = jsonFormatter.SerializerSettings;
             //settings.Formatting = Formatting.Indented;
             //settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        }
+
+        protected void Application_BeginRequest(object sender, EventArgs e)
+        {
+            if (HttpContext.Current.Request.IsSecureConnection.Equals(false) &&
+                HttpContext.Current.Request.IsLocal.Equals(false))
+                Response.Redirect("https://" + Request.ServerVariables["HTTP_HOST"]
+                                  + HttpContext.Current.Request.RawUrl);
         }
     }
 }

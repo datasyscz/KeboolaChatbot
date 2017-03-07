@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Keboola.Bot
+namespace Keboola.Bot.Editor.Models
 {
     public class KeboolaToken
     {

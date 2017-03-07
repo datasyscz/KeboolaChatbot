@@ -16,9 +16,9 @@ namespace Keboola.Bot
 
         public static CommandType Handle(Activity activity, BotData userData = null, BotData conversationData = null)
         {
-            if ((activity.Text == "//reset") || (activity.Text == "reset") || (activity.Text == "restart"))
+            if (activity.Text == "//reset" || activity.Text == "reset" || activity.Text == "restart")
                 return CommandType.Reset;
-            if ((activity.Text?.ToLower() == "//help") || (activity.Text?.ToLower() == "help"))
+            if (activity.Text?.ToLower() == "//help" || activity.Text?.ToLower() == "help")
                 return CommandType.Help;
             return CommandType.None;
         }
